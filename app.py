@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import numpy as np
 from flask import Flask, render_template, request, Markup, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
@@ -140,7 +142,7 @@ def farmer_storage():
                     INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
                     INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
                     WHERE Renter_Person_Id='{user_id}' "
-    all_mandi_board = "SELECT Mandi_Board_Id FROM dbms_project.mandi_board"
+    all_mandi_board = "SELECT Mandi_Board_Id,Name FROM dbms_project.mandi_board"
     cursor.execute(farmer_storage_in_mandi_board)
     farmer_storage_data = cursor.fetchall()
     cursor.execute(all_mandi_board)
@@ -152,11 +154,11 @@ def farmer_storage():
     print('Hello outside Get')
     if request.method == 'GET':
         print('Hello Get')
-        cursor = mysql.connection.cursor()
+        cursor = mysql.connection.cursor()  # TODO:write right query
         available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
             INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
             INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-            WHERE  timeFrom<= '{current_date}'"
+            WHERE  timeTo <'{current_date}'"
 
         cursor.execute(available_storage_space)
         all_mandi_board_storage = cursor.fetchall()
@@ -170,7 +172,7 @@ def farmer_storage():
         available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
                     INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
                     INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                    WHERE  timeFrom<= '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
+                    WHERE  timeTo < '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
         cursor.execute(available_storage_space)
         all_mandi_board_storage = cursor.fetchall()
         cursor.close()
@@ -182,12 +184,34 @@ def farmer_storage():
 
 @app.route('/add_storage_space', methods=['GET', 'POST'])
 def add_storage_space():
-    if request.method == 'POST':  # TODO: update=> mandi_board->Revenue_Storage_Space,table storage_mandi_board_rent,table
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
         Storage_Id = request.form['Storage_Id']
         Mandi_name = request.form['Mandi_Board_Name']
         current_date = datetime.today().strftime('%Y-%m-%d')
         date_to = request.form['date_to']
-        print(Storage_Id, Mandi_name, current_date, date_to)
+        User_Id = 'u9'
+
+        sql_for_mandiDetails = f"SELECT * FROM dbms_project.mandi_board WHERE Name='{Mandi_name}'"
+        cursor.execute(sql_for_mandiDetails)
+        Mandi_Board_detail = cursor.fetchone()
+
+        Mandi_Board_id = Mandi_Board_detail['Mandi_Board_Id']
+        insert_mandiBoard_rent = f"INSERT INTO dbms_project.storage_mandi_board_rent (Storage_Id, Mandi_Board_Id, Renter_Person_Id, timeFrom, timeTo) VALUES('{Storage_Id}','{Mandi_Board_id}','{User_Id}','{current_date}','{date_to}')"
+        cursor.execute(insert_mandiBoard_rent)
+        mysql.connection.commit()
+
+        sql_storage_charges = f"SELECT Charges FROM dbms_project.storage_mandi_board WHERE Storage_Id='{Storage_Id}' AND Mandi_Board_Id='{Mandi_Board_id}'"
+        cursor.execute(sql_storage_charges)
+        storage_charges = cursor.fetchone()
+
+        mandi_storage_revenue = Mandi_Board_detail['Revenue_Storage_Space'] + storage_charges['Charges']
+
+        update_mandi_storage_revenue = f"UPDATE dbms_project.mandi_board SET Revenue_Storage_Space ='{mandi_storage_revenue}'"
+        cursor.execute(update_mandi_storage_revenue)
+        mysql.connection.commit()
+
+        cursor.close()
 
     return redirect(url_for('farmer_storage'))
 
