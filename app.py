@@ -284,8 +284,27 @@ def check_login_info():
 @app.route('/Trader_signUp', methods=['GET', 'POST'])
 def Trader_signUp():
     if request.method == 'POST':
-        print('hello Trader')  # TODO: add trader data to trader table in DB
-    return render_template("trader_registration.html")
+        cursor = mysql.connection.cursor()
+        Name = request.form.get('Name')
+        Username = request.form.get('Username')
+        Phone_Number = request.form.get('phone_no')
+        Password = request.form.get('inputPassword')
+        BankAccount = request.form.get('inputAccount')
+        cursor.execute("SELECT User_Id from dbms_project.trader")
+        trader_data = cursor.fetchall()
+        trader_Id = -1
+        for val in trader_data:
+            ID = val['User_Id']
+            if int(ID[1:]) > trader_Id:
+                trader_Id = int(ID[1:])
+        trader_Id = 't' + str(trader_Id + 1)
+        new_Trader_Sql = f"INSERT INTO dbms_project.trader(User_Id, Login, Password, Name, Mobile_Number, Bank_Account_Number, Total_Trade_Charges)" \
+                         f"VALUES ('{trader_Id}','{Username}','{Password}','{Name}','{Phone_Number}','{BankAccount}','{'0'}')"
+        cursor.execute(new_Trader_Sql)
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('check_login_info'))
+    return render_template("/Trader/trader_registration.html")
 
 
 @app.route('/Seller_signUp/<string:seller_type>', methods=['GET', 'POST'])
@@ -341,7 +360,7 @@ def Seller_signUp(seller_type):
                     farmer_ID = int(ID[1:])
             farmer_ID = 'f' + str(farmer_ID + 1)
             new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id, Trade_Charges) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}','{0}')"
-                                                                                                # TODO: here assigning fp1 to each farmer,farmer can change it after farmer login
+            # TODO: here assigning fp1 to each farmer,farmer can change it after farmer login
             cursor.execute(new_farmer_sql)
 
         print("USER_ID: " + str(User_Id))
