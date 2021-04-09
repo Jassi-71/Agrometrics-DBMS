@@ -382,6 +382,13 @@ def FPO_SignUp():
     return redirect(url_for('Seller_signUp', seller_type='FPO'))
 
 
+@app.route('/Mandi_Board_signUp', methods=['GET', 'POST'])
+def Mandi_Board_signUp():
+    if request.method == 'POST':
+        print('hello Mandi_Board')  # TODO: add entry to Mandi_board table in DB
+    return render_template("mandi_house_registration.html")
+
+
 @app.route('/Analyst_signUp', methods=['GET', 'POST'])
 def Analyst_signUp():
     if request.method == 'POST':
