@@ -382,6 +382,30 @@ def FPO_SignUp():
     return redirect(url_for('Seller_signUp', seller_type='FPO'))
 
 
+@app.route('/Analyst_signUp', methods=['GET', 'POST'])
+def Analyst_signUp():
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        Name = request.form.get('Name')
+        Username = request.form.get('Username')
+        email = request.form.get('email')
+        password = request.form.get('inputPassword')
+        cursor.execute('SELECT Analyst_Id from analyst')
+        analyst_data = cursor.fetchall()
+        analyst_ID = -1
+        for val in analyst_data:
+            ID = val['Analyst_Id']
+            if int(ID[1:]) > analyst_ID:
+                analyst_ID = int(ID[1:])
+        analyst_ID = 't' + str(analyst_ID + 1)
+        new_analyst_sql = f"INSERT INTO dbms_project.analyst(Analyst_Id, Login, Password, Analyst_Name, email) VALUES('{analyst_ID}','{Username}','{password}','{Name}','{email}')"
+        cursor.execute(new_analyst_sql)
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('check_login_info'))
+    return render_template("/Analyst/analyst_registration.html")
+
+
 if __name__ == '__main__':
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.run(debug=True)
