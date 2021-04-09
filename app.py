@@ -205,7 +205,7 @@ def add_storage_space():
 
         mandi_storage_revenue = Mandi_Board_detail['Revenue_Storage_Space'] + storage_charges['Charges']
 
-        update_mandi_storage_revenue = f"UPDATE dbms_project.mandi_board SET Revenue_Storage_Space ='{mandi_storage_revenue}'"
+        update_mandi_storage_revenue = f"UPDATE dbms_project.mandi_board SET Revenue_Storage_Space ='{mandi_storage_revenue}' WHERE Mandi_Board_Id='{Mandi_Board_id}'"
         cursor.execute(update_mandi_storage_revenue)
         mysql.connection.commit()
 
