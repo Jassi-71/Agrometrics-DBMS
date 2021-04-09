@@ -1,6 +1,4 @@
 from datetime import datetime
-
-import numpy as np
 from flask import Flask, render_template, request, Markup, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
