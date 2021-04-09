@@ -14,6 +14,8 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
 
+current_date = datetime.today().strftime('%Y-%m-%d')
+
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
@@ -186,7 +188,6 @@ def add_storage_space():
         cursor = mysql.connection.cursor()
         Storage_Id = request.form['Storage_Id']
         Mandi_name = request.form['Mandi_Board_Name']
-        current_date = datetime.today().strftime('%Y-%m-%d')
         date_to = request.form['date_to']
         User_Id = 'u9'
 
@@ -278,6 +279,88 @@ def check_login_info():
                 return render_template('Login.html')
 
     return render_template('Login.html')
+
+
+@app.route('/Trader_signUp', methods=['GET', 'POST'])
+def Trader_signUp():
+    if request.method == 'POST':
+        print('hello Trader')  # TODO: add trader data to trader table in DB
+    return render_template("trader_registration.html")
+
+
+@app.route('/Seller_signUp/<string:seller_type>', methods=['GET', 'POST'])
+def Seller_signUp(seller_type):
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        Name = request.form.get('Name')
+        Email = request.form.get('email')
+        password = request.form.get('inputPassword')
+        Username = request.form.get('Username')
+        Income = request.form.get('inputIncome')
+        Locality = request.form.get('inputLocality')
+        State = request.form.get('State')
+        District = request.form.get('inputDistrict')
+        Zip = request.form.get('inputZip')
+        BankAccount = request.form.get('inputAccount')
+        cursor.execute('SELECT User_Id FROM seller')
+        seller_data = cursor.fetchall()
+        User_Id = -1
+        for val in seller_data:
+            ID = val['User_Id']
+            if int(ID[1:]) > User_Id:
+                User_Id = int(ID[1:])
+        User_Id = 'u' + str(User_Id + 1)
+
+        Designation = 'F'
+        if seller_type == 'FPO':
+            Designation = 'FP'
+        sql_formula = f"INSERT INTO dbms_project.seller(User_Id,Login,Password,Name,Locality,District,State,Pincode,Bank_Account_No,Income,Designation,Email) VALUES('{User_Id}','{Username}','{password}','{Name}','{Locality}','{District}','{State}','{Zip}','{BankAccount}','{Income}','{Designation}','{Email}') "
+
+        cursor.execute(sql_formula)
+        mysql.connection.commit()
+
+        if seller_type == 'FPO':  # inserting data into FPO table
+            cursor.execute('SELECT Fpo_Id FROM dbms_project.fpo')
+            fpo_data = cursor.fetchall()
+            FPO_Id = -1
+            for val in fpo_data:
+                ID = val['Fpo_Id']
+                if int(ID[2:]) > FPO_Id:
+                    FPO_Id = int(ID[2:])
+            FPO_Id = 'fp' + str(FPO_Id + 1)
+            new_fpo_sql = f"INSERT INTO dbms_project.fpo(Fpo_Id, User_Id_Linked, Fpo_Registration_Date) VALUES('{FPO_Id}','{User_Id}','{current_date}')"
+            cursor.execute(new_fpo_sql)
+
+        else:  # inserting data into farmer table
+            cursor.execute('SELECT Farmer_Id FROM dbms_project.farmers')
+            farmer_data = cursor.fetchall()
+            farmer_ID = -1
+            for val in farmer_data:
+                ID = val['Farmer_Id']
+                if int(ID[1:]) > farmer_ID:
+                    farmer_ID = int(ID[1:])
+            farmer_ID = 'f' + str(farmer_ID + 1)
+            new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id, Trade_Charges) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}','{0}')"
+                                                                                                # TODO: here assigning fp1 to each farmer,farmer can change it after farmer login
+            cursor.execute(new_farmer_sql)
+
+        print("USER_ID: " + str(User_Id))
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect(url_for('check_login_info'))
+
+    return render_template("/FPO/seller_registration.html")
+
+
+@app.route('/Farmer_signUp', methods=['GET', 'POST'])
+def Farmer_SignUp():
+    return redirect(url_for('Seller_signUp', seller_type='Farmer'))
+
+
+@app.route('/FPO_signUp', methods=['GET', 'POST'])
+def FPO_SignUp():
+    return redirect(url_for('Seller_signUp', seller_type='FPO'))
 
 
 if __name__ == '__main__':
