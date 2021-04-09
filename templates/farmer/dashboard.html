@@ -1,0 +1,203 @@
+{% extends "/farmer/base.html" %}
+{#{% load static %}#}
+
+{% block content %}
+    <div style="padding: 40px">
+        <div style="margin-left: 250px; display: inline-block;background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+            <h5>Total Income</h5>
+
+        </div>
+        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+            <h5>This month income</h5>
+        </div>
+        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+            <h5>Total Taxes Paid</h5>
+        </div>
+        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+            <h5>Taxes Paid This month</h5>
+        </div>
+    </div>
+    <div class="header" style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 350px; margin-top: 30px; display: inline-block">
+        <h3>{{ title }}</h3>
+
+        <canvas id="chart" width="400" height="400"></canvas>
+        <script>
+            // bar chart data
+            var barData = null
+            barData = {
+                labels: [
+                    {% for item in labels %}
+                        "{{ item }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    data: [
+                        {% for item in values %}
+                            "{{ item }}",
+                        {% endfor %}
+                    ]
+                }
+                ]
+            };
+
+            var mychart = null
+            mychart = document.getElementById("chart").getContext("2d");
+
+            steps = 10;
+            max = {{max}}
+
+                // draw bar chart
+                new Chart(mychart).Bar(barData, {
+                        scaleOverride: true,
+                        scaleSteps: steps,
+                        scaleStepWidth: Math.ceil(max / steps),
+                        scaleStartValue: 0,
+                        scaleShowVerticalLines: true,
+                        scaleShowGridLines: true,
+                        barShowStroke: true,
+                        scrollbars: true,
+                        scrolling: scrollX,
+                        scaleShowLabels: true,
+                    }
+                );
+
+
+        </script>
+    </div>
+
+    <div class="header"
+         style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 100px; margin-top: 30px; display: inline-block">
+        <h3>{{ title1 }}</h3>
+
+        <canvas id="chart1" width="400" height="400"></canvas>
+        <script>
+            // bar chart data
+            var barData1 = null
+            barData1 = {
+                labels: [
+                    {% for item in labels1 %}
+                        "{{ item }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    data: [
+                        {% for item in values1 %}
+                            "{{ item }}",
+                        {% endfor %}
+                    ]
+                }
+                ]
+            };
+
+            var mychart1 = null
+            mychart1 = document.getElementById("chart1").getContext("2d");
+
+            steps1 = 10;
+            max1 = {{max1}}
+
+                // draw bar chart
+                new Chart(mychart1).Bar(barData1, {
+                        scaleOverride: true,
+                        scaleSteps: steps,
+                        scaleStepWidth: Math.ceil(max1 / steps1),
+                        scaleStartValue: 0,
+                        scaleShowVerticalLines: true,
+                        scaleShowGridLines: true,
+                        barShowStroke: true,
+                        scrollbars: true,
+                        scrolling: scrollX,
+                        scaleShowLabels: true,
+                    }
+                );
+
+        </script>
+    </div>
+    <div style="height: 650px">
+        <div class="page-wrapper" style="width: 550px; margin-left: 280px; display: inline-block; margin-top: 50px;">
+            <div class="content">
+                <div class="row">
+    {#                <div class="col-sm-4 col-3">#}
+                        <h4 class="page-title">Recommended Crops</h4>
+    {#                </div>#}
+                </div>
+                <div class="row" style="height: 500px; overflow-y: auto">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped custom-table" >
+                                <thead>
+                                <tr>
+                                    <th>Seller Id</th>
+                                    <th>User Name</th>
+                                    <th>Password</th>
+                                    <th>Name</th>
+                                    <th>State</th>
+                                </tr>
+                                </thead>
+                                <tbody >
+                                {% for row in data %}
+{#                                    <h1>{{ row['User_Id'] }}</h1>#}
+                                    <tr>
+                                        <td>{{ row['User_Id'] }}</td>
+                                        <td>{{ row['Login'] }}</td>
+                                        <td>{{ row['Password'] }}</td>
+                                        <td>{{ row['Name'] }}</td>
+                                        <td>{{ row['State'] }}</td>
+{#                                        {% for column in row %}#}
+{#                                            <td> {{ row[column] }}</td>#}
+{#                                        {% endfor %}#}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-wrapper" style="width: 550px; margin-left: 70px; display: inline-block; margin-top: 50px;">
+            <div class="content">
+                <div class="row">
+    {#                <div class="col-sm-4 col-3">#}
+                        <h4 class="page-title">Recommended Policies</h4>
+    {#                </div>#}
+                </div>
+                <div class="row" style="height: 500px; overflow-y: auto">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped custom-table">
+                                <thead>
+                                <tr>
+                                    <th>Seller Id</th>
+                                    <th>User Name</th>
+                                    <th>Password</th>
+                                    <th>Name</th>
+                                    <th>State</th>
+                                </tr>
+                                </thead>
+                                <tbody >
+                                {% for row in data %}
+                                    <tr>
+                                        {% for column in row %}
+                                            <td> {{ row[column] }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

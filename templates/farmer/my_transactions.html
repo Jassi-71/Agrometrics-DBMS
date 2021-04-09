@@ -1,0 +1,47 @@
+{% extends '/farmer/base.html' %}
+{% block content  %}
+<form method = 'POST' style="margin-left : 300px">
+    <select name="buyer_Id">
+        {% for trader in traders %}
+        <option value="{{trader.Trader_Id}}">{{trader.Trader_Id  }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class = "btn btn-success"> Search </button>
+</form>
+
+<div class = "table-responsive container" style="margin-left : 300px">
+
+    <table class="table table-bordered table-dark">
+        <thead>
+        <tr>
+            {% for i in columns %}
+            <th scope="col">{{i}}</th>
+            {% endfor %}
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in table%}
+        <tr>
+            <td>
+                {{i.Transaction_Id}}
+            </td>
+            <td>
+                {{i.Crop_Id}}
+            </td>
+            <td>
+                {{i.buyer_Id}}
+            </td>
+            <td>
+                {{i.seller_Id}}
+            </td>
+            <td>
+                {{i.Amount}}
+            </td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}

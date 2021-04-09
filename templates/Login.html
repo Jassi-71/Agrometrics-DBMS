@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/login.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+    <body>
+        <div class="wrapper">
+          <div class="title">Login Form</div>
+            <form method="post" >
+                <div class="field">
+                    <input type="text" name="Username" id="Username" required>
+                    <label for="Username">Username</label>
+                </div>
+                <div class="field">
+                  <input type="password" name="inputPassword" id="inputPassword" required>
+                  <label for="inputPassword">Password</label>
+                </div>
+                <div class="field">
+                    <select name="profession">
+                        <option value="" disabled selected> Select your Profession</option>
+                        <option value="Farmer">Farmer</option>
+                        <option value="Trader">Trader</option>
+                        <option value="Mandi_Board">Mandi Board</option>
+                        <option value="FPO">FPO</option>
+                        <option value="Analyst">Analyst</option>
+                    </select>
+                </div>
+                <div class="content">
+                  <div class="checkbox">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Remember me</label>
+                  </div>
+                <div class="pass-link">
+                    <a href="#">Forgot password?</a></div>
+                </div>
+                <div class="field">
+                  <input type="submit" value="Login">
+                </div>
+                <div class="signup-link">
+                    Not a member? <a href="../templates/start.html">Signup now</a></div>
+            </form>
+        </div>
+    </body>
+</html>
+
