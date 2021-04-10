@@ -32,9 +32,11 @@ def base():
 @app.route('/my_transactions', methods=['GET', 'POST'])
 def my_transactions():
     cur = mysql.connection.cursor()
-    cur.execute("select User_Id from dbms_project.trader")
-    traders = cur.fetchall()
+    cur.execute("select Trader_Id from dbms_project.trader")
+    traders = list(cur.fetchall())
+    traders.insert(0, {'Trader_Id':'All'})
     cur.close()
+    bbuyer_Id = None
     if request.method == 'GET':
         cur = mysql.connection.cursor()
         cur.execute(
@@ -45,19 +47,52 @@ def my_transactions():
         cur.close()
 
     if request.method == 'POST':
-        buyer_Id = request.form.get('buyer_Id')
-        print(buyer_Id)
+        bbuyer_Id = request.form.get('buyer_Id')
+        print(bbuyer_Id)
         cur = mysql.connection.cursor()
-        cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
-                buyer_Id))
+        if (bbuyer_Id == 'All'):
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        else:
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
         cur.close()
 
     return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders)
+                           traders=traders, buyer_Id = bbuyer_Id)
 
+
+@app.route('/transaction', methods=['GET', 'POST']) # trader transaction
+def trader_transactions():
+    cur = mysql.connection.cursor()
+    cur.execute("select Farmer_Id from dbms_project.farmer")
+    farmers = list(cur.fetchall())
+    farmers.insert(0, {'Trader_Id':'All'})
+    cur.close()
+    bbuyer_Id = None
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        result = cur.fetchall()
+        columns = [h[0] for h in cur.description]
+
+        cur.close()
+
+    if request.method == 'POST':
+        bbuyer_Id = request.form.get('buyer_Id')
+        print(bbuyer_Id)
+        cur = mysql.connection.cursor()
+        if (bbuyer_Id == 'All'):
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        else:
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
+        result = cur.fetchall()
+        columns = [h[0] for h in cur.description]
+        cur.close()
+
+    return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
+                           traders=traders, buyer_Id = bbuyer_Id)
 
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():
@@ -174,7 +209,7 @@ def farmer_storage():
             available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
                         INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
                         INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                        WHERE  timeTo < '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
+                        WHERE  timeTo < '{current_date}' AND dbms_project.storage_mandi_board_rent.Mandi_Board_Id='{mandi_boardID_selected}' "
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
