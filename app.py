@@ -126,12 +126,14 @@ def farmer_dashboard():
         maximum1 = max(maximum1, (round(d['Quantity_Kg'])))
         far2gh.append(d['seller_Id'])
 
-    cur.execute("SELECT User_Id, Login, Password, Name, State FROM dbms_project.seller;")
+    cur.execute("Select Crop_Name,SUM(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join crops on transaction.Crop_Id = crops.Crop_Id  group by crops.Crop_Id order by sum(Amount) desc;-- year(Date_Of_Transaction)=year(curdate())")
     result1 = cur.fetchall()
+    cur.execute("Select government_policy.Policy_Id,Name, Details from seller_policy join government_policy on government_policy.Policy_Id = seller_policy.Policy_Id and Expires_On>curdate() and Implemented_On<curdate();")
+    result2 = cur.fetchall()
     cur.close()
     return render_template('/farmer/dashboard.html', title='Only Farmers Income Chart', max=maximum + 1000,
                            labels=far1gh, values=far1gv, title1='Tansaction Chat of Farmer', max1=maximum1 + 4,
-                           labels1=far2gh, values1=far2gv, data=result1)
+                           labels1=far2gh, values1=far2gv, data=result1, data1=result2)
 
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])
