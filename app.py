@@ -32,25 +32,25 @@ def base():
 @app.route('/my_transactions', methods=['GET', 'POST'])
 def my_transactions():
     cur = mysql.connection.cursor()
-    cur.execute("select Trader_Id from dbms_project.trader")
+    cur.execute("select User_Id from dbms_project.trader")
     traders = cur.fetchall()
     cur.close()
     if request.method == 'GET':
         cur = mysql.connection.cursor()
         cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id ")
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
 
         cur.close()
 
     if request.method == 'POST':
-        bbuyer_Id = request.form.get('buyer_Id')
-        print(bbuyer_Id)
+        buyer_Id = request.form.get('buyer_Id')
+        print(buyer_Id)
         cur = mysql.connection.cursor()
         cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
-                bbuyer_Id))
+            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
+                buyer_Id))
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
         cur.close()
@@ -136,110 +136,116 @@ def farmer_dashboard():
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])
 def farmer_storage():
-    user_id = 'u31'  # TODO: here assigning a fake farmer ID
-    cursor = mysql.connection.cursor()
-    farmer_storage_in_mandi_board = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,Charges,timeFrom,timeTo FROM dbms_project.storage_mandi_board_rent\
-                    INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
-                    INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                    WHERE Renter_Person_Id='{user_id}' "
-    all_mandi_board = "SELECT Mandi_Board_Id,Name FROM dbms_project.mandi_board"
-    cursor.execute(farmer_storage_in_mandi_board)
-    farmer_storage_data = cursor.fetchall()
-    cursor.execute(all_mandi_board)
-    all_mandi_board_data = cursor.fetchall()
-    current_date = datetime.today().strftime('%Y-%m-%d')
-    cursor.close()
-    all_mandi_board_storage = None
-
-    print('Hello outside Get')
-    if request.method == 'GET':
-        print('Hello Get')
-        cursor = mysql.connection.cursor()  # TODO:write right query
-        available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
-            INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
-            INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-            WHERE  timeTo <'{current_date}'"
-
-        cursor.execute(available_storage_space)
-        all_mandi_board_storage = cursor.fetchall()
-        cursor.close()
-        print(all_mandi_board_storage)
-
-    if request.method == 'POST':
+    if not session.get('Username') is None:  # checking if session exists
+        user_id = session.get('User_Id')
         cursor = mysql.connection.cursor()
-        mandi_boardID_selected = request.form['mandi_board_selection']
-
-        available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
-                    INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
-                    INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                    WHERE  timeTo < '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
-        cursor.execute(available_storage_space)
-        all_mandi_board_storage = cursor.fetchall()
+        farmer_storage_in_mandi_board = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,Charges,timeFrom,timeTo FROM dbms_project.storage_mandi_board_rent\
+                        INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
+                        INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
+                        WHERE Renter_Person_Id='{user_id}' "
+        all_mandi_board = "SELECT User_Id,Name FROM dbms_project.mandi_board"
+        cursor.execute(farmer_storage_in_mandi_board)
+        farmer_storage_data = cursor.fetchall()
+        cursor.execute(all_mandi_board)
+        all_mandi_board_data = cursor.fetchall()
         cursor.close()
+        all_mandi_board_storage = None
 
-    return render_template('/farmer/Storage.html', storage_output_data=farmer_storage_data,
-                           mandiID_output_data=all_mandi_board_data,
-                           all_mandi_board_storage_output_data=all_mandi_board_storage)
+        print('Hello outside Get')
+        if request.method == 'GET':
+            print('Hello Get')
+            cursor = mysql.connection.cursor()  # TODO:write right query
+            available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
+                INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
+                INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
+                WHERE  timeTo <'{current_date}'"
+
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+            print(all_mandi_board_storage)
+
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            mandi_boardID_selected = request.form['mandi_board_selection']
+
+            available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
+                        INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
+                        INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
+                        WHERE  timeTo < '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+
+        return render_template('/farmer/Storage.html', storage_output_data=farmer_storage_data,
+                               mandiID_output_data=all_mandi_board_data,
+                               all_mandi_board_storage_output_data=all_mandi_board_storage)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
 @app.route('/add_storage_space', methods=['GET', 'POST'])
 def add_storage_space():
     if request.method == 'POST':
-        cursor = mysql.connection.cursor()
-        Storage_Id = request.form['Storage_Id']
-        Mandi_name = request.form['Mandi_Board_Name']
-        date_to = request.form['date_to']
-        User_Id = 'u9'
+        if not session.get('Username') is None:
+            cursor = mysql.connection.cursor()
+            Storage_Id = request.form['Storage_Id']
+            Mandi_name = request.form['Mandi_Board_Name']
+            date_to = request.form['date_to']
+            User_Id = session.get('User_Id')
 
-        sql_for_mandiDetails = f"SELECT * FROM dbms_project.mandi_board WHERE Name='{Mandi_name}'"
-        cursor.execute(sql_for_mandiDetails)
-        Mandi_Board_detail = cursor.fetchone()
+            sql_for_mandiDetails = f"SELECT * FROM dbms_project.mandi_board WHERE Name='{Mandi_name}'"
+            cursor.execute(sql_for_mandiDetails)
+            Mandi_Board_detail = cursor.fetchone()
 
-        Mandi_Board_id = Mandi_Board_detail['Mandi_Board_Id']
-        insert_mandiBoard_rent = f"INSERT INTO dbms_project.storage_mandi_board_rent (Storage_Id, Mandi_Board_Id, Renter_Person_Id, timeFrom, timeTo) VALUES('{Storage_Id}','{Mandi_Board_id}','{User_Id}','{current_date}','{date_to}')"
-        cursor.execute(insert_mandiBoard_rent)
-        mysql.connection.commit()
+            Mandi_Board_id = Mandi_Board_detail['Mandi_Board_Id']
+            insert_mandiBoard_rent = f"INSERT INTO dbms_project.storage_mandi_board_rent (Storage_Id, Mandi_Board_Id, Renter_Person_Id, timeFrom, timeTo) VALUES('{Storage_Id}','{Mandi_Board_id}','{User_Id}','{current_date}','{date_to}')"
+            cursor.execute(insert_mandiBoard_rent)
+            mysql.connection.commit()
 
-        sql_storage_charges = f"SELECT Charges FROM dbms_project.storage_mandi_board WHERE Storage_Id='{Storage_Id}' AND Mandi_Board_Id='{Mandi_Board_id}'"
-        cursor.execute(sql_storage_charges)
-        storage_charges = cursor.fetchone()
+            sql_storage_charges = f"SELECT Charges FROM dbms_project.storage_mandi_board WHERE Storage_Id='{Storage_Id}' AND Mandi_Board_Id='{Mandi_Board_id}'"
+            cursor.execute(sql_storage_charges)
+            storage_charges = cursor.fetchone()
 
-        mandi_storage_revenue = Mandi_Board_detail['Revenue_Storage_Space'] + storage_charges['Charges']
+            mandi_storage_revenue = Mandi_Board_detail['Revenue_Storage_Space'] + storage_charges['Charges']
 
-        update_mandi_storage_revenue = f"UPDATE dbms_project.mandi_board SET Revenue_Storage_Space ='{mandi_storage_revenue}' WHERE Mandi_Board_Id='{Mandi_Board_id}'"
-        cursor.execute(update_mandi_storage_revenue)
-        mysql.connection.commit()
+            update_mandi_storage_revenue = f"UPDATE dbms_project.mandi_board SET Revenue_Storage_Space ='{mandi_storage_revenue}' WHERE User_Id='{Mandi_Board_id}'"
+            cursor.execute(update_mandi_storage_revenue)
+            mysql.connection.commit()
 
-        cursor.close()
+            cursor.close()
 
-    return redirect(url_for('farmer_storage'))
+        return redirect(url_for('farmer_storage'))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('loggedin', None)
+    session.pop('User_Id', None)
+    session.pop('Username', None)
+    session.pop('profession', None)
+    return render_template('start.html')
 
 
 def create_session(account):
     session['loggedin'] = True
+    session['User_Id'] = account['User_Id']
+    session['Username'] = account['Login']
+
     if session['profession'] == 'Farmer':
-        session['User_Id'] = account['User_Id']
-        session['Username'] = account['Login']
         return redirect(url_for('farmer_dashboard'))
 
     elif session['profession'] == 'FPO':
-        session['User_Id'] = account['User_Id']
-        session['Username'] = account['Login']
         return render_template('/FPO/dashboard.html')
 
     elif session['profession'] == 'Trader':
-        session['User_Id'] = account['User_Id']
-        session['Username'] = account['Login']
         return redirect(url_for('trader_dashboard'))
 
     elif session['profession'] == 'Mandi_Board':
-        session['User_Id'] = account['Mandi_Board_Id']
-        session['Username'] = account['Login']
         return render_template('/Mandi_Board/dashboard.html')
 
     elif session['profession'] == 'Analyst':
-        session['User_Id'] = account['Analyst_Id']
-        session['Username'] = account['Login']
         return render_template('/Analyst/dashboard.html')
 
     return f"<h1>{account['Login']}</h1>"
@@ -424,7 +430,7 @@ def Mandi_Board_signUp():
             if int(ID[2:]) > Mandi_board_ID:
                 Mandi_board_ID = int(ID[2:])
         Mandi_board_ID = 'mb' + str(Mandi_board_ID + 1)
-        new_Mandi_Board_sql = f"INSERT INTO dbms_project.mandi_board (Mandi_Board_Id, Login, Password, Name, State, Locality, District, Pincode, Rating, Trade_Charges, Registered_Users, Revenue_Trading, Revenue_Storage_Space, Email_Address, Contact_No)" \
+        new_Mandi_Board_sql = f"INSERT INTO dbms_project.mandi_board (User_Id, Login, Password, Name, State, Locality, District, Pincode, Rating, Trade_Charges, Registered_Users, Revenue_Trading, Revenue_Storage_Space, Email_Address, Contact_No)" \
                               f"VALUES('{Mandi_board_ID}','{Username}','{password}','{Name}','{State}','{Locality}','{District}','{Zip}','{'0'}','{trade_charges}','{'0'}','{'0'}','{'0'}','{Email}','{phone_no}') "
         cursor.execute(new_Mandi_Board_sql)
         mysql.connection.commit()
@@ -449,7 +455,7 @@ def Analyst_signUp():
             if int(ID[1:]) > analyst_ID:
                 analyst_ID = int(ID[1:])
         analyst_ID = 't' + str(analyst_ID + 1)
-        new_analyst_sql = f"INSERT INTO dbms_project.analyst(Analyst_Id, Login, Password, Analyst_Name, email) VALUES('{analyst_ID}','{Username}','{password}','{Name}','{email}')"
+        new_analyst_sql = f"INSERT INTO dbms_project.analyst(User_Id, Login, Password, Analyst_Name, email) VALUES('{analyst_ID}','{Username}','{password}','{Name}','{email}')"
         cursor.execute(new_analyst_sql)
         mysql.connection.commit()
         cursor.close()
