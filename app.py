@@ -62,7 +62,8 @@ def farmer_insert():
 
 @app.route('/farmer_delete/<string:id_data>', methods=['POST', 'GET'])
 def farmer_delete(id_data):
-    mysql.connection.cursor().execute(f"Delete From crop_seller WHERE Seller_Id='u1' AND Crop_Id={id_data}")
+    user_id = session.get('User_Id')
+    mysql.connection.cursor().execute(f"Delete From crop_seller WHERE Seller_Id='{user_id}' AND Crop_Id='{id_data}'")
     mysql.connection.commit()
     return redirect(url_for('farmer_crops'))
 
