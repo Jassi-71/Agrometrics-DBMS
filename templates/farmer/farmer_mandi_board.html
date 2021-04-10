@@ -46,11 +46,11 @@
 </section>
 
 <section>
-    <h3>Search by Mandi Board</h3>
+    <h3>Search by Mandi Board/Crops</h3>
     <div class="mandi_board_storage_selection">
         <form method="post" class="form1">
             <select name="mandi_board_selection" required>
-                <option value="All"> All Mandi Board</option>
+                <option value="All"> All Mandi Board </option>
                 {% for val in mandiID_output_data %}
                     <option value="{{ val['User_Id'] }}">{{ val['Name'] }}</option>
                 {% endfor %}
