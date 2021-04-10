@@ -29,6 +29,44 @@ def base():
     return render_template('farmer/base.html')
 
 
+@app.route('/farmer_crops', methods=['GET', 'POST'])
+def farmer_crops():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT Crop_Name,crop_seller.Crop_Id,Quality_10 , Price_1kg,Quantity_Kg FROM crop_seller join crops on crop_seller.Crop_Id=crops.Crop_Id WHERE Seller_Id='{user_id}'")
+        crop_data = cursor.fetchall()
+
+        return render_template('/farmer/my_crops.html', data=crop_data)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
+@app.route('/farmer_insert', methods=['POST'])
+def farmer_insert():
+    if request.method == "POST":
+        cursor = mysql.connection.cursor()
+        crop_id = request.form['crop_id']
+        quality = request.form['quality']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"INSERT INTO crop_seller (Seller_Id,Crop_Id,Quality_10 , Price_1kg,Quantity_Kg) VALUES(%s, %s, %s,%s,%s)",
+            (user_id, crop_id, quality, price, quantity))
+        mysql.connection.commit()
+        return redirect(url_for('farmer_crops'))
+
+
+@app.route('/farmer_delete/<string:id_data>', methods=['POST', 'GET'])
+def farmer_delete(id_data):
+    mysql.connection.cursor().execute(f"Delete From crop_seller WHERE Seller_Id='u1' AND Crop_Id={id_data}")
+    mysql.connection.commit()
+    return redirect(url_for('farmer_crops'))
+
+
 @app.route('/farmer_transactions', methods=['GET', 'POST'])
 def farmer_transactions():
     if not session.get('Username') is None:
@@ -199,30 +237,35 @@ def farmer_dashboard():
     result2 = cur.fetchall()
     cur.execute(
         "select seller_Id,seller.Name,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join seller where seller.User_Id=transaction.seller_Id and seller.Designation='F' and seller_Id='u1' group by seller_Id;")
-    TotalIncome = cur.fetchall(); totalincome = 0
+    TotalIncome = cur.fetchall();
+    totalincome = 0
     for i in TotalIncome:
         totalincome = i['Amount']
     cur.execute(
         "select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by month(transaction.Date_Of_Transaction);")
-    ThisMonthIncome = cur.fetchall(); monthincome = 0
+    ThisMonthIncome = cur.fetchall();
+    monthincome = 0
     for i in ThisMonthIncome:
         monthincome = i['Amount']
     cur.execute(
         "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='u1' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-    TotalTaxPaid = cur.fetchall();TotalTax = 0
+    TotalTaxPaid = cur.fetchall();
+    TotalTax = 0
     for i in TotalTaxPaid:
-        TotalTax += round(i['amount']*i['Trade_Charges'],2)
+        TotalTax += round(i['amount'] * i['Trade_Charges'], 2)
     cur.execute(
         "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-    TaxThisMonth = cur.fetchall();MonthTax = 0
+    TaxThisMonth = cur.fetchall();
+    MonthTax = 0
     for i in TaxThisMonth:
-        MonthTax += round(i['amount']*i['Trade_Charges'],2)
+        MonthTax += round(i['amount'] * i['Trade_Charges'], 2)
     cur.close()
 
     print(totalincome)
     print(monthincome)
     return render_template('/farmer/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
-                           max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2, TotalIncome=totalincome,MonthIncome=monthincome, TotalTax=TotalTax,MonthTax=MonthTax)
+                           max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
+                           TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
 
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])
