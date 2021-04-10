@@ -217,11 +217,31 @@ def add_storage_space():
 
 def create_session(account):
     session['loggedin'] = True
-    session['User_Id'] = account['User_Id']  # getting User_Id
-    session['Username'] = account['Login']  # getting Username
-    print(session['profession'])
     if session['profession'] == 'Farmer':
+        session['User_Id'] = account['User_Id']
+        session['Username'] = account['Login']
         return redirect(url_for('farmer_dashboard'))
+
+    elif session['profession'] == 'FPO':
+        session['User_Id'] = account['User_Id']
+        session['Username'] = account['Login']
+        return render_template('/FPO/dashboard.html')
+
+    elif session['profession'] == 'Trader':
+        session['User_Id'] = account['User_Id']
+        session['Username'] = account['Login']
+        return redirect(url_for('trader_dashboard'))
+
+    elif session['profession'] == 'Mandi_Board':
+        session['User_Id'] = account['Mandi_Board_Id']
+        session['Username'] = account['Login']
+        return render_template('/Mandi_Board/dashboard.html')
+
+    elif session['profession'] == 'Analyst':
+        session['User_Id'] = account['Analyst_Id']
+        session['Username'] = account['Login']
+        return render_template('/Analyst/dashboard.html')
+
     return f"<h1>{account['Login']}</h1>"
 
 
