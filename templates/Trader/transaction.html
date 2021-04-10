@@ -1,4 +1,4 @@
-{% extends '/trader/base.html' %}
+{% extends '/Trader/base.html' %}
 {% block content  %}
 
 <div class = "container p-5">
@@ -9,10 +9,10 @@
                 <label for="seller_Id">Choose a Farmer</label>
                 <select name="seller_Id" id="seller_Id">
                     {% for farmer in farmers %}
-                    {% if seller_Id == farmer.Farmer_Id %}
-                    <option value="{{farmer.Farmer_Id}}" selected = "selected">{{farmer.Farmer_Id  }}</option>
+                    {% if seller_Id == farmer.User_Id_Linked %}
+                    <option value="{{farmer.User_Id_Linked}}" selected = "selected">{{farmer.User_Id_Linked  }}</option>
                     {% else %}
-                    <option value="{{farmer.Farmer_Id}}">{{farmer.Farmer_Id  }}</option>
+                    <option value="{{farmer.User_Id_Linked}}">{{farmer.User_Id_Linked  }}</option>
 
                     {% endif %}
                     {% endfor %}
