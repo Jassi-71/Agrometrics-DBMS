@@ -31,8 +31,10 @@ def base():
 def my_transactions():
     cur = mysql.connection.cursor()
     cur.execute("select Trader_Id from dbms_project.trader")
-    traders = cur.fetchall()
+    traders = list(cur.fetchall())
+    traders.insert(0, {'Trader_Id':'All'})
     cur.close()
+    bbuyer_Id = None
     if request.method == 'GET':
         cur = mysql.connection.cursor()
         cur.execute(
@@ -46,16 +48,49 @@ def my_transactions():
         bbuyer_Id = request.form.get('buyer_Id')
         print(bbuyer_Id)
         cur = mysql.connection.cursor()
-        cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
-                bbuyer_Id))
+        if (bbuyer_Id == 'All'):
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        else:
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
         cur.close()
 
     return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders)
+                           traders=traders, buyer_Id = bbuyer_Id)
 
+
+@app.route('/transaction', methods=['GET', 'POST']) # trader transaction
+def trader_transactions():
+    cur = mysql.connection.cursor()
+    cur.execute("select Farmer_Id from dbms_project.farmer")
+    farmers = list(cur.fetchall())
+    farmers.insert(0, {'Trader_Id':'All'})
+    cur.close()
+    bbuyer_Id = None
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        result = cur.fetchall()
+        columns = [h[0] for h in cur.description]
+
+        cur.close()
+
+    if request.method == 'POST':
+        bbuyer_Id = request.form.get('buyer_Id')
+        print(bbuyer_Id)
+        cur = mysql.connection.cursor()
+        if (bbuyer_Id == 'All'):
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+        else:
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
+        result = cur.fetchall()
+        columns = [h[0] for h in cur.description]
+        cur.close()
+
+    return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
+                           traders=traders, buyer_Id = bbuyer_Id)
 
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():

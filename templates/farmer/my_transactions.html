@@ -1,47 +1,74 @@
 {% extends '/farmer/base.html' %}
 {% block content  %}
-<form method = 'POST' style="margin-left : 300px">
-    <select name="buyer_Id">
-        {% for trader in traders %}
-        <option value="{{trader.Trader_Id}}">{{trader.Trader_Id  }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" class = "btn btn-success"> Search </button>
-</form>
 
-<div class = "table-responsive container" style="margin-left : 300px">
+<div class = "container p-5">
+    <form method = 'POST' >
+        <div class = "container d-flex justify-content-center align-items-center">
 
-    <table class="table table-bordered table-dark">
-        <thead>
-        <tr>
-            {% for i in columns %}
-            <th scope="col">{{i}}</th>
+            <div class = "m-3">
+                <label for="buyer_Id">Choose a Trader</label>
+                <select name="buyer_Id" id="buyer_Id">
+                    {% for trader in traders %}
+                    {% if buyer_Id == trader.Trader_Id %}
+                    <option value="{{trader.Trader_Id}}" selected = "selected">{{trader.Trader_Id  }}</option>
+                    {% else %}
+                    <option value="{{trader.Trader_Id}}">{{trader.Trader_Id  }}</option>
+
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class = "m-3">
+                <label for="date1">Date(After):</label>
+                <input type="date" id="date1" name="date1">
+            </div>
+
+            <div class = "m-3">
+                <label for="date2">Date(Before):</label>
+                <input type="date" id="date2" name="date2">
+            </div>
+            <button type="submit" class = "btn btn-success"> Search </button>
+        </div>
+    </form>
+</div>
+
+<div class = "container" style="margin-left:215px;">
+
+    <div class = "table-responsive " >
+
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                {% for i in columns %}
+                <th scope="col">{{i}}</th>
+                {% endfor %}
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in table%}
+            <tr>
+                <td>
+                    {{i.Transaction_Id}}
+                </td>
+                <td>
+                    {{i.Crop_Id}}
+                </td>
+                <td>
+                    {{i.buyer_Id}}
+                </td>
+                <td>
+                    {{i.seller_Id}}
+                </td>
+                <td>
+                    {{i.Amount}}
+                </td>
+            </tr>
             {% endfor %}
 
-        </tr>
-        </thead>
-        <tbody>
-        {% for i in table%}
-        <tr>
-            <td>
-                {{i.Transaction_Id}}
-            </td>
-            <td>
-                {{i.Crop_Id}}
-            </td>
-            <td>
-                {{i.buyer_Id}}
-            </td>
-            <td>
-                {{i.seller_Id}}
-            </td>
-            <td>
-                {{i.Amount}}
-            </td>
-        </tr>
-        {% endfor %}
-
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

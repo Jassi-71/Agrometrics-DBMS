@@ -1,0 +1,74 @@
+{% extends '/trader/base.html' %}
+{% block content  %}
+
+<div class = "container p-5">
+    <form method = 'POST' >
+        <div class = "container d-flex justify-content-center align-items-center">
+
+            <div class = "m-3">
+                <label for="seller_Id">Choose a Farmer</label>
+                <select name="seller_Id" id="seller_Id">
+                    {% for farmer in farmers %}
+                    {% if seller_Id == farmer.Farmer_Id %}
+                    <option value="{{farmer.Farmer_Id}}" selected = "selected">{{farmer.Farmer_Id  }}</option>
+                    {% else %}
+                    <option value="{{farmer.Farmer_Id}}">{{farmer.Farmer_Id  }}</option>
+
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class = "m-3">
+                <label for="date1">Date(After):</label>
+                <input type="date" id="date1" name="date1">
+            </div>
+
+            <div class = "m-3">
+                <label for="date2">Date(Before):</label>
+                <input type="date" id="date2" name="date2">
+            </div>
+            <button type="submit" class = "btn btn-success"> Search </button>
+        </div>
+    </form>
+</div>
+
+<div class = "container" style="margin-left:215px;">
+
+    <div class = "table-responsive " >
+
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                {% for i in columns %}
+                <th scope="col">{{i}}</th>
+                {% endfor %}
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in table%}
+            <tr>
+                <td>
+                    {{i.Transaction_Id}}
+                </td>
+                <td>
+                    {{i.Crop_Id}}
+                </td>
+                <td>
+                    {{i.buyer_Id}}
+                </td>
+                <td>
+                    {{i.seller_Id}}
+                </td>
+                <td>
+                    {{i.Amount}}
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
