@@ -385,8 +385,32 @@ def FPO_SignUp():
 @app.route('/Mandi_Board_signUp', methods=['GET', 'POST'])
 def Mandi_Board_signUp():
     if request.method == 'POST':
-        print('hello Mandi_Board')  # TODO: add entry to Mandi_board table in DB
-    return render_template("mandi_house_registration.html")
+        cursor = mysql.connection.cursor()
+        Name = request.form.get('Name')
+        Username = request.form.get('Username')
+        Email = request.form.get('email')
+        password = request.form.get('inputPassword')
+        phone_no = request.form.get('phone_no')
+        trade_charges = request.form.get('trade_charges')
+        Locality = request.form.get('inputLocality')
+        State = request.form.get('State')
+        District = request.form.get('inputDistrict')
+        Zip = request.form.get('inputZip')
+        cursor.execute("SELECT Mandi_Board_Id FROM dbms_project.mandi_board")
+        mandi_board_data = cursor.fetchall()
+        Mandi_board_ID = -1
+        for val in mandi_board_data:
+            ID = val['Mandi_Board_Id']
+            if int(ID[2:]) > Mandi_board_ID:
+                Mandi_board_ID = int(ID[2:])
+        Mandi_board_ID = 'mb' + str(Mandi_board_ID + 1)
+        new_Mandi_Board_sql = f"INSERT INTO dbms_project.mandi_board (Mandi_Board_Id, Login, Password, Name, State, Locality, District, Pincode, Rating, Trade_Charges, Registered_Users, Revenue_Trading, Revenue_Storage_Space, Email_Address, Contact_No)" \
+                              f"VALUES('{Mandi_board_ID}','{Username}','{password}','{Name}','{State}','{Locality}','{District}','{Zip}','{'0'}','{trade_charges}','{'0'}','{'0'}','{'0'}','{Email}','{phone_no}') "
+        cursor.execute(new_Mandi_Board_sql)
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('check_login_info'))
+    return render_template("/Mandi_Board/Mandi_Board_registration.html")
 
 
 @app.route('/Analyst_signUp', methods=['GET', 'POST'])
