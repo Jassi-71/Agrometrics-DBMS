@@ -29,7 +29,7 @@ def base():
     return render_template('farmer/base.html')
 
 
-@app.route('/farmer/my_transactions', methods=['GET', 'POST'])
+@app.route('/farmer_transactions', methods=['GET', 'POST'])
 def farmer_transactions():
     if not session.get('Username') is None:
         cur = mysql.connection.cursor()
@@ -63,7 +63,7 @@ def farmer_transactions():
             columns = [h[0] for h in cur.description]
             cur.close()
 
-        return render_template('/farmer/transactions.html', title='My Transactions', table=result, columns=columns, traders=traders, buyer_Id = bbuyer_Id)
+        return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns, traders=traders, buyer_Id = bbuyer_Id)
 
     else:
         print("No username found in session")
