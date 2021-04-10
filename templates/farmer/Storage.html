@@ -6,7 +6,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/farmer/storage_space.css') }}">
-<script rel="text/javascript" src="{{ url_for('static', filename='javaScript.js') }}"></script>
 
 {% endblock %}
 
@@ -14,7 +13,7 @@
 {% block content %}
       <section>
   <!--for demo wrap-->
-  <h1>My Storage Space</h1>
+  <h3>My Storage Space</h3>
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
@@ -51,14 +50,14 @@
 
 <section>
   <!--for demo wrap-->
-    <h1>Available Storage Space</h1>
+    <h3>Available Storage Space</h3>
 
     <div class="mandi_board_storage_selection">
         <form method="post">
             <select name="mandi_board_selection" required>
                 <option value="" disabled selected> Select Mandi Board</option>
                 {% for val in mandiID_output_data %}
-                    <option value="{{ val['Mandi_Board_Id'] }}">{{ val['Name'] }}</option>
+                    <option value="{{ val['User_Id'] }}">{{ val['Name'] }}</option>
                 {% endfor %}
             </select>
             <button type="submit" > Search </button>

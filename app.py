@@ -34,7 +34,7 @@ def my_transactions():
     cur = mysql.connection.cursor()
     cur.execute("select Trader_Id from dbms_project.trader")
     traders = list(cur.fetchall())
-    traders.insert(0, {'Trader_Id':'All'})
+    traders.insert(0, {'Trader_Id': 'All'})
     cur.close()
     bbuyer_Id = None
     if request.method == 'GET':
@@ -51,23 +51,26 @@ def my_transactions():
         print(bbuyer_Id)
         cur = mysql.connection.cursor()
         if (bbuyer_Id == 'All'):
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
         else:
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
+                    bbuyer_Id))
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
         cur.close()
 
     return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders, buyer_Id = bbuyer_Id)
+                           traders=traders, buyer_Id=bbuyer_Id)
 
 
-@app.route('/transaction', methods=['GET', 'POST']) # trader transaction
+@app.route('/transaction', methods=['GET', 'POST'])  # trader transaction
 def trader_transactions():
     cur = mysql.connection.cursor()
     cur.execute("select Farmer_Id from dbms_project.farmer")
     farmers = list(cur.fetchall())
-    farmers.insert(0, {'Trader_Id':'All'})
+    farmers.insert(0, {'Trader_Id': 'All'})
     cur.close()
     bbuyer_Id = None
     if request.method == 'GET':
@@ -84,15 +87,19 @@ def trader_transactions():
         print(bbuyer_Id)
         cur = mysql.connection.cursor()
         if (bbuyer_Id == 'All'):
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
         else:
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(
+                    bbuyer_Id))
         result = cur.fetchall()
         columns = [h[0] for h in cur.description]
         cur.close()
 
     return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders, buyer_Id = bbuyer_Id)
+                           traders=traders, buyer_Id=bbuyer_Id)
+
 
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():
@@ -186,15 +193,11 @@ def farmer_storage():
         cursor.close()
         all_mandi_board_storage = None
 
-        print('Hello outside Get')
         if request.method == 'GET':
-            print('Hello Get')
             cursor = mysql.connection.cursor()  # TODO:write right query
-            available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
-                INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
-                INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                WHERE  timeTo <'{current_date}'"
-
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where not exists(\
+                    SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                    WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id)"
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
@@ -204,10 +207,9 @@ def farmer_storage():
             cursor = mysql.connection.cursor()
             mandi_boardID_selected = request.form['mandi_board_selection']
 
-            available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
-                        INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
-                        INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                        WHERE  timeTo < '{current_date}' AND dbms_project.storage_mandi_board_rent.Mandi_Board_Id='{mandi_boardID_selected}' "
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where storage_mandi_board.Mandi_Board_ID = '{mandi_boardID_selected}' AND not exists(\
+                    SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                    WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id )"
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
@@ -252,6 +254,58 @@ def add_storage_space():
             cursor.close()
 
         return redirect(url_for('farmer_storage'))
+
+
+@app.route('/farmer_mandi_board', methods=['GET', 'POST'])
+def farmer_mandi_board():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT * FROM dbms_project.mandi_board")
+        mandi_data = cursor.fetchall()
+        cursor.execute("SELECT dbms_project.mandi_board.Name,dbms_project.crops.Crop_Name,Msp from dbms_project.crop_mandi_board\
+                    INNER JOIN dbms_project.crops ON dbms_project.crop_mandi_board.Crop_Id=dbms_project.crops.Crop_Id\
+                    INNER JOIN dbms_project.mandi_board ON dbms_project.crop_mandi_board.Mandi_Board_Id=dbms_project.mandi_board.User_Id")
+        crops_list = cursor.fetchall()
+        cursor.execute("SELECT User_Id,Name FROM dbms_project.mandi_board")
+        all_mandi_board_data = cursor.fetchall()
+
+        cursor.execute("SELECT Crop_Id, Crop_Name FROM dbms_project.crops")
+        all_crop_name = cursor.fetchall()
+
+        cursor.close()
+
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            mandi_boardID_selected = request.form['mandi_board_selection']
+            crop_selected = request.form['crop_selection']
+            if mandi_boardID_selected == 'All':
+                if crop_selected == 'All':
+                    pass
+                else:
+                    cursor.execute(f"SELECT dbms_project.mandi_board.Name,dbms_project.crops.Crop_Name,Msp from dbms_project.crop_mandi_board\
+                                        INNER JOIN dbms_project.crops ON dbms_project.crop_mandi_board.Crop_Id=dbms_project.crops.Crop_Id\
+                                        INNER JOIN dbms_project.mandi_board ON dbms_project.crop_mandi_board.Mandi_Board_Id=dbms_project.mandi_board.User_Id WHERE dbms_project.crops.Crop_Id='{crop_selected}'")
+                    crops_list = cursor.fetchall()
+            elif crop_selected == 'All':
+                if mandi_boardID_selected == 'All':
+                    pass
+                else:
+                    cursor.execute(f"SELECT dbms_project.mandi_board.Name,dbms_project.crops.Crop_Name,Msp from dbms_project.crop_mandi_board\
+                                                            INNER JOIN dbms_project.crops ON dbms_project.crop_mandi_board.Crop_Id=dbms_project.crops.Crop_Id\
+                                                            INNER JOIN dbms_project.mandi_board ON dbms_project.crop_mandi_board.Mandi_Board_Id=dbms_project.mandi_board.User_Id WHERE dbms_project.mandi_board.User_Id='{mandi_boardID_selected}'")
+                    crops_list = cursor.fetchall()
+            else:
+                cursor.execute(f"SELECT dbms_project.mandi_board.Name,dbms_project.crops.Crop_Name,Msp from dbms_project.crop_mandi_board\
+                                                                            INNER JOIN dbms_project.crops ON dbms_project.crop_mandi_board.Crop_Id=dbms_project.crops.Crop_Id\
+                                                                            INNER JOIN dbms_project.mandi_board ON dbms_project.crop_mandi_board.Mandi_Board_Id=dbms_project.mandi_board.User_Id WHERE dbms_project.mandi_board.User_Id='{mandi_boardID_selected}' AND dbms_project.crops.Crop_Id='{crop_selected}'")
+                crops_list = cursor.fetchall()
+            print("Mandi "+mandi_boardID_selected)
+            print("Crops "+crop_selected)
+        return render_template('/farmer/farmer_mandi_board.html', data=mandi_data, crops_list=crops_list,
+                               mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
 @app.route('/logout')

@@ -1,5 +1,5 @@
 
-h1{
+h3{
   font-size: 30px;
   color: #fff;
   text-transform: uppercase;
@@ -90,7 +90,10 @@ section{
     overflow-y:cursor;
 
 }
-
+.mandi_board_storage_selection .select2
+{
+    margin-left:50px;
+}
 .mandi_board_storage_selection form button
 {
     padding: 1rem;
@@ -98,7 +101,7 @@ section{
 	background-color: #36ad7c;
 	color:#fff;
 	align:center;
-	width:10%;
+	width:15%;
     max-height:150px;
-    margin-left:100px;
+    margin-left:70px;
 }

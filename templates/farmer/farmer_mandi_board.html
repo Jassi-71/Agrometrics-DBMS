@@ -1,0 +1,95 @@
+{%  extends "/farmer/base.html" %}
+
+{% block more_css %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/farmer/storage_space.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+    <h3> MANDI BOARDS </h3>
+    <div class="tbl-header">
+        <table cellpadding="0"  cellspacing="0"  border="0">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Rating</th>
+                <th>Trading Charge(%)</th>
+                <th>Contact No</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="tbl-content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+
+            {% for item in data %}
+            <tr>
+                <td>{{item.Name}}</td>
+                <td>{{item.Locality}}</td>
+                <td>{{item.Rating}}</td>
+                <td>{{item.Trade_Charges}}</td>
+                <td>{{item.Contact_No}}</td>
+                <td>{{item.Email_Address}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h3>Search by Mandi Board</h3>
+    <div class="mandi_board_storage_selection">
+        <form method="post" class="form1">
+            <select name="mandi_board_selection" required>
+                <option value="All"> All Mandi Board</option>
+                {% for val in mandiID_output_data %}
+                    <option value="{{ val['User_Id'] }}">{{ val['Name'] }}</option>
+                {% endfor %}
+            </select>
+            <select name="crop_selection" class="select2" required>
+                <option value="All"> All Crop</option>
+                {% for val in crop_output_data %}
+                    <option value="{{ val['Crop_Id'] }}">{{ val['Crop_Name'] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" >Search </button>
+        </form>
+    </div>
+    <div class="tbl-header">
+        <table cellpadding="0"  cellspacing="0"  border="0">
+            <thead>
+            <tr>
+                <th>Mandi Name</th>
+                <th>Crops</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="tbl-content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+
+            {% for item in crops_list %}
+            <tr>
+                <td>{{item.Name}}</td>
+                <td>{{item.Crop_Name}}</td>
+                <td>{{item.Msp}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}
