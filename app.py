@@ -29,70 +29,87 @@ def base():
     return render_template('farmer/base.html')
 
 
-@app.route('/my_transactions', methods=['GET', 'POST'])
-def my_transactions():
-    cur = mysql.connection.cursor()
-    cur.execute("select Trader_Id from dbms_project.trader")
-    traders = list(cur.fetchall())
-    traders.insert(0, {'Trader_Id':'All'})
-    cur.close()
-    bbuyer_Id = None
-    if request.method == 'GET':
+@app.route('/farmer/my_transactions', methods=['GET', 'POST'])
+def farmer_transactions():
+    if not session.get('Username') is None:
         cur = mysql.connection.cursor()
-        cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id ")
-        result = cur.fetchall()
-        columns = [h[0] for h in cur.description]
-
+        cur.execute("select User_Id from dbms_project.trader")
+        traders = list(cur.fetchall())
+        # print(traders)
+        traders.insert(0, {'User_Id':'All'})
+        # print(traders)
+        UUser_Id = session.get('User_Id')
+        # print(UUser_Id)
         cur.close()
+        bbuyer_Id = None
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(UUser_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
 
-    if request.method == 'POST':
-        bbuyer_Id = request.form.get('buyer_Id')
-        print(bbuyer_Id)
-        cur = mysql.connection.cursor()
-        if (bbuyer_Id == 'All'):
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
-        else:
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
-        result = cur.fetchall()
-        columns = [h[0] for h in cur.description]
-        cur.close()
+            cur.close()
 
-    return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders, buyer_Id = bbuyer_Id)
+        if request.method == 'POST':
+            bbuyer_Id = request.form.get('buyer_Id')
+            print(bbuyer_Id)
+            cur = mysql.connection.cursor()
+            if (bbuyer_Id == 'All'):
+                cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(UUser_Id))
+            else:
+                cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}' and transaction.buyer_Id = '{}'".format(UUser_Id, bbuyer_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+            cur.close()
+
+        return render_template('/farmer/transactions.html', title='My Transactions', table=result, columns=columns, traders=traders, buyer_Id = bbuyer_Id)
+
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
-@app.route('/transaction', methods=['GET', 'POST']) # trader transaction
+@app.route('/trader_transactions', methods=['GET', 'POST']) # trader transaction
 def trader_transactions():
-    cur = mysql.connection.cursor()
-    cur.execute("select Farmer_Id from dbms_project.farmer")
-    farmers = list(cur.fetchall())
-    farmers.insert(0, {'Trader_Id':'All'})
-    cur.close()
-    bbuyer_Id = None
-    if request.method == 'GET':
+    if not session.get('Username') is None:
         cur = mysql.connection.cursor()
-        cur.execute(
-            "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
-        result = cur.fetchall()
-        columns = [h[0] for h in cur.description]
-
+        cur.execute("select User_Id_Linked from dbms_project.farmers")
+        farmers = list(cur.fetchall())
+        print(farmers)
+        farmers.insert(0, {'User_Id_Linked':'All'})
+        print(farmers)
+        UUser_Id = session.get('User_Id')
+        print(UUser_Id)
         cur.close()
+        sseller_Id = None
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.farmers on farmers.User_Id_Linked = transaction.seller_Id where transaction.buyer_Id = '{}'".format(UUser_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
 
-    if request.method == 'POST':
-        bbuyer_Id = request.form.get('buyer_Id')
-        print(bbuyer_Id)
-        cur = mysql.connection.cursor()
-        if (bbuyer_Id == 'All'):
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id ")
-        else:
-            cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.Trader_Id = transaction.buyer_Id where transaction.buyer_Id = '{}'".format(bbuyer_Id))
-        result = cur.fetchall()
-        columns = [h[0] for h in cur.description]
-        cur.close()
+            cur.close()
 
-    return render_template('/farmer/my_transactions.html', title='My Transactions', table=result, columns=columns,
-                           traders=traders, buyer_Id = bbuyer_Id)
+        if request.method == 'POST':
+            sseller_Id = request.form.get('seller_Id')
+            # print(sseler_Id)
+            cur = mysql.connection.cursor()
+            if (sseller_Id == 'All'):
+                cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.farmers on farmers.User_Id_Linked = transaction.seller_Id where transaction.buyer_Id = '{}'".format(UUser_Id))
+            else:
+                cur.execute("Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.farmers on farmers.User_Id_Linked = transaction.seller_Id where transaction.buyer_Id = '{}' and transaction.seller_Id = '{}'".format(UUser_Id, sseller_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+            cur.close()
+
+        return render_template('/Trader/transaction.html', title='My Transactions', table=result, columns=columns,
+                               farmers=farmers, seller_Id = sseller_Id)
+
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():
