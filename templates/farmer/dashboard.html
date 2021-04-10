@@ -17,23 +17,27 @@
 
 {% block content %}
     <div style="padding: 40px">
-        <div style="margin-left: 250px; display: inline-block;background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 250px;padding: 20px; display: inline-block;background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
             <h5>Total Income</h5>
+            <h6>{{ TotalIncome }}</h6>
 
         </div>
-        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
             <h5>This month income</h5>
+            <h6>{{ MonthIncome }}</h6>
         </div>
-        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
             <h5>Total Taxes Paid</h5>
+            <h6>{{ TotalTax }}</h6>
         </div>
-        <div style="margin-left: 50px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
             <h5>Taxes Paid This month</h5>
+            <h6>{{ MonthTax }}</h6>
         </div>
     </div>
     <div class="header"
          style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 350px; margin-top: 30px; display: inline-block">
-        <h3>{{ title }}</h3>
+        <h3>Monthly Income</h3>
 
         <canvas id="chart" width="400" height="400"></canvas>
         <script>
@@ -86,7 +90,7 @@
 
     <div class="header"
          style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 100px; margin-top: 30px; display: inline-block">
-        <h3>{{ title1 }}</h3>
+        <h3>Amount of each crop sold</h3>
 
         <canvas id="chart1" width="400" height="400"></canvas>
         <script>
