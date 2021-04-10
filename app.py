@@ -172,7 +172,7 @@ def farmer_storage():
             available_storage_space = f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,State,Charges,Space FROM dbms_project.storage_mandi_board_rent \
                         INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
                         INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
-                        WHERE  timeTo < '{current_date}' AND dbms_project.mandi_board.Mandi_Board_Id='{mandi_boardID_selected}' "
+                        WHERE  timeTo < '{current_date}' AND dbms_project.storage_mandi_board_rent.Mandi_Board_Id='{mandi_boardID_selected}' "
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
