@@ -9,10 +9,10 @@
                 <label for="buyer_Id">Choose a Trader</label>
                 <select name="buyer_Id" id="buyer_Id">
                     {% for trader in traders %}
-                    {% if buyer_Id == trader.Trader_Id %}
-                    <option value="{{trader.Trader_Id}}" selected = "selected">{{trader.Trader_Id  }}</option>
+                    {% if buyer_Id == trader.User_Id %}
+                    <option value="{{trader.User_Id}}" selected = "selected">{{trader.User_Id  }}</option>
                     {% else %}
-                    <option value="{{trader.Trader_Id}}">{{trader.Trader_Id  }}</option>
+                    <option value="{{trader.User_Id}}">{{trader.User_Id  }}</option>
 
                     {% endif %}
                     {% endfor %}
