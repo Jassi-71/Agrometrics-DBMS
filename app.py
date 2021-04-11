@@ -95,7 +95,7 @@ def farmer_transactions():
             bbuyer_Id = request.form.get('buyer_Id')
             print(bbuyer_Id)
             cur = mysql.connection.cursor()
-            if (bbuyer_Id == 'All'):
+            if bbuyer_Id == 'All':
                 cur.execute(
                     "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(
                         UUser_Id))
@@ -142,7 +142,7 @@ def trader_transactions():
             sseller_Id = request.form.get('seller_Id')
             # print(sseler_Id)
             cur = mysql.connection.cursor()
-            if (sseller_Id == 'All'):
+            if sseller_Id == 'All':
                 cur.execute(
                     "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.farmers on farmers.User_Id_Linked = transaction.seller_Id where transaction.buyer_Id = '{}'".format(
                         UUser_Id))
