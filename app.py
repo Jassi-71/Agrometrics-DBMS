@@ -219,7 +219,8 @@ def trader_transactions():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/trader_crop_price',methods=['GET','POST'])
+
+@app.route('/trader_crop_price', methods=['GET', 'POST'])
 def trader_crop_price():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -229,16 +230,15 @@ def trader_crop_price():
         cursor.execute("SELECT Crop_Id, Crop_Name FROM dbms_project.crops")
         all_crop_name = cursor.fetchall()
 
-
         cursor.execute("SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board")
-        all_crops_table=cursor.fetchall()
+        all_crops_table = cursor.fetchall()
         cursor.close()
         if request.method == "POST":
             cursor = mysql.connection.cursor()
             mandi_boardID_selected = request.form['mandi_board_selection']
-            crop_output_data=request.form['crop_selection']
-            crop_price=request.form['crop_price']
+            crop_output_data = request.form['crop_selection']
+            crop_price = request.form['crop_price']
             if mandi_boardID_selected == 'All':
                 if crop_output_data == 'All':
                     if crop_price == '':
@@ -265,7 +265,7 @@ def trader_crop_price():
                     else:
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}' AND Price_1kg<'{crop_price}' ")
-                        all_crops_table=cursor.fetchall()
+                        all_crops_table = cursor.fetchall()
                 else:
                     if crop_price == '':
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
@@ -276,7 +276,8 @@ def trader_crop_price():
                                                                                                join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<'{crop_price}' AND mandi_board.Name='{mandi_boardID_selected}'")
                         all_crops_table = cursor.fetchall()
             cursor.close()
-        return render_template('/Trader/crop_price.html',mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name,all_crops_table=all_crops_table)
+        return render_template('/Trader/crop_price.html', mandiID_output_data=all_mandi_board_data,
+                               crop_output_data=all_crop_name, all_crops_table=all_crops_table)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
@@ -340,9 +341,8 @@ def mandi_board_transactions():
             columns = [h[0] for h in cur.description]
             cur.close()
 
-
         return render_template('/Mandi_Board/transactions.html', title='My Transactions', table=result, columns=columns,
-                               farmers=farmers, traders=traders, seller_Id=sseller_Id, bbuyer_Id = bbuyer_Id)
+                               farmers=farmers, traders=traders, seller_Id=sseller_Id, bbuyer_Id=bbuyer_Id)
 
     else:
         print("No username found in session")
@@ -473,6 +473,36 @@ def farmer_dashboard():
         return render_template('/farmer/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
                                max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
                                TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
+@app.route('/analyst_dashboard', methods=['GET', 'POST'])
+def analyst_dashboard():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        return render_template('/Analyst/dashboard.html')
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
+@app.route('/FPO_dashboard', methods=['GET', 'POST'])
+def FPO_dashboard():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        return render_template('/FPO/dashboard.html')
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
+@app.route('/mandi_board__dashboard', methods=['GET', 'POST'])
+def mandi_board_dashboard():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        return render_template('/Mandi_Board/dashboard.html')
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
@@ -627,7 +657,7 @@ def create_session(account):
         return redirect(url_for('farmer_dashboard'))
 
     elif session['profession'] == 'FPO':
-        return redirect(url_for('farmer_dashboard'))
+        return redirect(url_for('FPO_dashboard'))
 
     elif session['profession'] == 'Trader':
         return redirect(url_for('trader_dashboard'))
@@ -636,7 +666,7 @@ def create_session(account):
         return redirect(url_for('mandi_board_dashboard'))
 
     elif session['profession'] == 'Analyst':
-        return render_template('Analyst_dashboard.html')
+        return redirect(url_for('analyst_dashboard'))
 
     return f"<h1>{account['Login']}</h1>"
 
