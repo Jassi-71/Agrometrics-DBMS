@@ -61,7 +61,7 @@ body {
 
 .wrapper .main_content .header {
     padding: 10px;
-    background: #fff;
+    background: linear-gradient(to right, #2a7c5a, #1ccf85);
     color: #717171;
     /*border-bottom: 1px solid #b0eacd;*/
 }
