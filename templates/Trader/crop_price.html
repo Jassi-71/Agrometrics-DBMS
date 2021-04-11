@@ -1,10 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends '/Trader/base.html' %}
 
-</body>
-</html>
+{% block content  %}
+    <div class = "container p-5" style="margin-left:290px;">
+    <div class="well text-center" style="margin-top:15px">
+        <h2 style="color: #094f0e;">Crops</h2>
+    </div>
+    <form method = 'POST' >
+        <div class = "container d-flex justify-content-center align-items-center">
+
+            <div class = "m-3">
+                <div class="mandi_board_storage_selection">
+                    <form method="post" class="form1">
+                         <select name="mandi_board_selection" required>
+                            <option value="All"> All Mandi Board </option>
+                            {% for val in mandiID_output_data %}
+                                <option value="{{ val['Name'] }}">{{ val['Name'] }}</option>
+                            {% endfor %}
+                        </select>
+                        <select name="crop_selection" class="select2" required>
+                            <option value="All"> All Crop</option>
+                            {% for val in crop_output_data %}
+                                <option value="{{ val['Crop_Name'] }}">{{ val['Crop_Name'] }}</option>
+                            {% endfor %}
+                         </select>
+                        <input type="text" placeholder="type crop price" name="crop_price">
+                        <button type="submit" class = "btn btn-success"> Search </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<div class = "container" style="margin-left:290px; height: 300px; overflow-y: auto">
+
+    <div class = "table-responsive " >
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Mandi Name</th>
+                <th>Crop Name</th>
+                <th>Seller ID</th>
+                <th>Price</th>
+                <th>Buy</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in all_crops_table%}
+            <tr>
+                <td class="table-boot">
+                    {{i.Name}}
+                </td>
+                <td class="table-boot">
+                    {{i.Crop_Name}}
+                </td>
+                <td class="table-boot">
+                    {{i.Seller_Id}}
+                </td >
+                <td class="table-boot">
+                    {{i.Price_1kg}}
+                </td>
+                <td class="table-boot">
+                    <button type="submit" class = "btn btn-success"> Buy </button>
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
