@@ -1,7 +1,10 @@
 {% extends '/Trader/base.html' %}
 {% block content  %}
 
-<div class = "container p-5">
+<div class = "container p-5" style="margin-left:290px;">
+    <div class="well text-center" style="margin-top:15px">
+        <h2 style="color: #094f0e;">My Transactions</h2>
+    </div>
     <form method = 'POST' >
         <div class = "container d-flex justify-content-center align-items-center">
 
@@ -33,15 +36,15 @@
     </form>
 </div>
 
-<div class = "container" style="margin-left:215px;">
+<div class = "container" style="margin-left:290px;">
 
     <div class = "table-responsive " >
 
-        <table class="table table-bordered table-dark">
+        <table class="table table-striped">
             <thead>
             <tr>
                 {% for i in columns %}
-                <th scope="col">{{i}}</th>
+                <th scope="col" class="table-boot1">{{i}}</th>
                 {% endfor %}
 
             </tr>
@@ -49,19 +52,19 @@
             <tbody>
             {% for i in table%}
             <tr>
-                <td>
+                <td class="table-boot">
                     {{i.Transaction_Id}}
                 </td>
-                <td>
+                <td class="table-boot">
                     {{i.Crop_Id}}
                 </td>
-                <td>
+                <td class="table-boot">
                     {{i.buyer_Id}}
-                </td>
-                <td>
+                </td >
+                <td class="table-boot">
                     {{i.seller_Id}}
                 </td>
-                <td>
+                <td class="table-boot">
                     {{i.Amount}}
                 </td>
             </tr>

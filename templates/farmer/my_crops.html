@@ -7,30 +7,30 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" >
-    <div class="well text-center" style="margin-top:25px">
-        <h1>Crops</h1>
+<div class="container" style="margin-left: 270px">
+    <div class="well text-center" style="margin-top:50px">
+        <h2 style="color: #094f0e;">Crops</h2>
     </div>
     <div class="container" style="margin-left:40px;">
         <div class="col-md-12">
-            <h2>Crop List <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add Crop </button> </h2>
+            <h4 style="color: #094f0e;">Crop List <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add Crop </button> </h4>
             <table class="table table-striped" style="margin-top:30px">
                 <tr>
                     <!--<th>Seller ID</th>-->
-                    <th>Crop Name</th>
-                    <th>Quality</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Action</th>
+                    <th class="table-boot1">Crop Name</th>
+                    <th class="table-boot1">Quality</th>
+                    <th class="table-boot1">Price</th>
+                    <th class="table-boot1">Quantity</th>
+                    <th class="table-boot1">Action</th>
                 </tr>
                 {% for row in data %}
                 <tr>
                     <!--<td>{{row.Seller_Id}}</td>-->
-                    <td>{{row.Crop_Name}}</td>
-                    <td>{{row.Quality_10}}</td>
-                    <td>{{row.Price_1kg}}</td>
-                    <td>{{row.Quantity_Kg}}</td>
-                    <td>
+                    <td class="table-boot">{{row.Crop_Name}}</td>
+                    <td class="table-boot">{{row.Quality_10}}</td>
+                    <td class="table-boot">{{row.Price_1kg}}</td>
+                    <td class="table-boot">{{row.Quantity_Kg}}</td>
+                    <td >
                         <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit" style="margin-right:20px">Edit</a>
                         <a href="/farmer_delete/{{row.Crop_Id}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm Delete')">Delete</a>
                     </td>
