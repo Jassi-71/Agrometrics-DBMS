@@ -1,5 +1,4 @@
-{% extends "/Trader/base.html" %}
-{#{% load static %}#}
+{% extends "/farmer/base.html" %}
 
 {% block more_css %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
@@ -19,16 +18,16 @@
     <div style="padding: 40px">
         <div style="margin-left: 470px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Total Spending</h5>
-            <h6>{{ TotalIncome }}</h6>
+            <h6>{{ Total_Spending }}</h6>
 
         </div>
         <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Total Trade Charges</h5>
-            <h6>{{ MonthIncome }}</h6>
+            <h6>{{ Total_Trade_Charges }}</h6>
         </div>
         <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Total Transactions</h5>
-            <h6>{{ TotalTax }}</h6>
+            <h6>{{ Total_Transactions }}</h6>
         </div>
     </div>
     <div
