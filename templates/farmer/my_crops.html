@@ -31,15 +31,11 @@
                     <td class="table-boot">{{row.Price_1kg}}</td>
                     <td class="table-boot">{{row.Quantity_Kg}}</td>
                     <td >
-                        <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit" style="margin-right:20px">Edit</a>
+                        <a href="/update/{{row.Crop_Id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.Crop_Id}}" style="margin-right:20px">Edit</a>
                         <a href="/farmer_delete/{{row.Crop_Id}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm Delete')">Delete</a>
                     </td>
                 </tr>
-                {% endfor %}
-            </table>
-
-        </div>
-        <div id="modaledit" class="modal fade" role="dialog">
+        <div id="modaledit{{row.Crop_Id}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -47,25 +43,26 @@
                         <h4 class="modal-title">Update Crop Details</h4>
                     </div>
                     <div class="modal-body">
-                        <form action="" method="POST">
+                        <form action="{{ url_for('update') }}" method="POST">
                         <div class="form-group">
                             <label>Crop ID:</label>
-                            <input type="hidden" name="id" value="100">
+                            <!--<input type="hidden" name="id" value="100">-->
+                            <input type="text" class="form-control" name="crop_id" value="{{row.Crop_Id}}">
                         </div>
                         <div class="form-group">
                             <label>Quality:</label>
-                            <input type="text" class="form-control" name="quality" value="1">
+                            <input type="text" class="form-control" name="quality" value="{{row.Quality_10}}">
                         </div>
                         <div class="form-group">
                             <label>Price:</label>
-                            <input type="text" class="form-control" name="price" value="1">
+                            <input type="text" class="form-control" name="price" value="{{row.Price_1kg}}">
                         </div>
                         <div class="form-group">
                             <label>Quantity:</label>
-                            <input type="text" class="form-control" name="quantity" value="1">
+                            <input type="text" class="form-control" name="quantity" value="{{row.Quantity_Kg}}">
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Insert Data</button>
+                            <button class="btn btn-primary" type="submit">Update Data</button>
                         </div>
                         </form>
                     </div>
@@ -75,6 +72,10 @@
                 </div>
             </div>
         </div>
+        {% endfor  %}
+
+        </table>
+
         <div id="mymodal" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -113,5 +114,6 @@
             </div>
         </div>
     </div>
+    </div>
+    {% endblock %}
 </div>
-{% endblock %}
