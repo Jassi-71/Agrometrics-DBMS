@@ -267,6 +267,21 @@ def trader_crop_price():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/trader_coupon', methods=['GET','POST'])
+def trader_coupon():
+    if not session.get('Username') is None:
+        cursor=mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>='{current_date}';")
+        all_coupon_available=cursor.fetchall()
+        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<'{current_date}';")
+        all_non_coupon_available=cursor.fetchall()
+        return render_template('/Trader/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
 def mandi_board_transactions():
@@ -368,19 +383,19 @@ def trader_dashboard():
 
         cur.execute(
             "select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by month(transaction.Date_Of_Transaction);")
-        Total_Spending = cur.fetchall();
+        Total_Spending = cur.fetchall()
         monthincome = 0
         for i in Total_Spending:
             monthincome = i['Amount']
         cur.execute(
             "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='u1' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-        Total_Trade_Charges = cur.fetchall();
+        Total_Trade_Charges = cur.fetchall()
         TotalTax = 0
         for i in Total_Trade_Charges:
             TotalTax += round(i['amount'] * i['Trade_Charges'], 2)
         cur.execute(
             "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-        Total_Transactions = cur.fetchall();
+        Total_Transactions = cur.fetchall()
         MonthTax = 0
         for i in Total_Transactions:
             MonthTax += round(i['amount'] * i['Trade_Charges'], 2)
@@ -448,7 +463,7 @@ def farmer_dashboard():
             TotalTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
         cur.execute(
             f"select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='{user_id}' and month(transaction.Date_Of_Transaction)=month(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-        TaxThisMonth = cur.fetchall();
+        TaxThisMonth = cur.fetchall()
         MonthTax = 0
         for i in TaxThisMonth:
             MonthTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
