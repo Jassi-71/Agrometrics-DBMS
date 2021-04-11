@@ -162,6 +162,74 @@ def trader_transactions():
         return redirect(url_for('check_login_info'))
 
 
+
+@app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
+def mandi_board_transactions():
+    if not session.get('Username') is None:
+        cur = mysql.connection.cursor()
+        cur.execute("select User_Id_Linked from dbms_project.farmers")
+        farmers = list(cur.fetchall())
+        farmers.insert(0, {'User_Id_Linked': 'All Sellers'})
+        cur.execute("select User_Id from dbms_project.trader")
+        traders = list(cur.fetchall())
+        traders.insert(0, {'User_Id': 'All Buyers'})
+        UUser_Id = session.get('User_Id')
+
+        print(UUser_Id)
+        cur.close()
+        sseller_Id = None
+        bbuyer_Id = None
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id;")
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+
+            cur.close()
+
+        if request.method == 'POST':
+            sseller_Id = request.form.get('seller_Id')
+            bbuyer_Id = request.form.get('bbuyer_Id')
+            cur = mysql.connection.cursor()
+            if (sseller_Id == 'All Sellers'):
+                if (bbuyer_Id == 'All Buyers'):
+                    cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                    join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                else:
+                    cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                    join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                    where transaction.buyer_Id = '{bbuyer_Id}' and transaction.Mandi_Board_Id = '{UUser_Id}';")
+
+            elif (bbuyer_Id == 'All Buyers'):
+                if (sseller_Id == 'All Sellers'):
+                    cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                    join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                else:
+                    cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                    join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                    where transaction.seller_Id = '{sseller_Id}' and transaction.Mandi_Board_Id = '{UUser_Id}';")
+
+            else:
+                cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
+                    join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                    where transaction.seller_Id = '{sseller_Id}' and transaction.buyer_Id = '{bbuyer_Id}' and transaction.Mandi_Board_Id = '{UUser_Id}';")
+
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+            cur.close()
+
+
+        return render_template('/Mandi_Board/transactions.html', title='My Transactions', table=result, columns=columns,
+                               farmers=farmers, traders=traders, seller_Id=sseller_Id, bbuyer_Id = bbuyer_Id)
+
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():
     tra1gv = []
@@ -419,16 +487,16 @@ def create_session(account):
         return redirect(url_for('farmer_dashboard'))
 
     elif session['profession'] == 'FPO':
-        return render_template('/FPO/dashboard.html')
+        return render_template('FPO_dashboard.html')
 
     elif session['profession'] == 'Trader':
         return redirect(url_for('trader_dashboard'))
 
     elif session['profession'] == 'Mandi_Board':
-        return render_template('/Mandi_Board/dashboard.html')
+        return redirect(url_for('mandi_board_dashboard'))
 
     elif session['profession'] == 'Analyst':
-        return render_template('/Analyst/dashboard.html')
+        return render_template('Analyst_dashboard.html')
 
     return f"<h1>{account['Login']}</h1>"
 
