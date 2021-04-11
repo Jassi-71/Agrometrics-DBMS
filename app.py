@@ -115,6 +115,50 @@ def farmer_transactions():
         return redirect(url_for('check_login_info'))
 
 
+@app.route('/FPO_transactions', methods=['GET', 'POST'])
+def FPO_transactions():
+    if not session.get('Username') is None:
+        cur = mysql.connection.cursor()
+        cur.execute("select User_Id from dbms_project.trader")
+        traders = list(cur.fetchall())
+        traders.insert(0, {'User_Id': 'All Buyers'})
+        UUser_Id = session.get('User_Id')
+        cur.close()
+        bbuyer_Id = None
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(
+                    UUser_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+
+            cur.close()
+
+        if request.method == 'POST':
+            bbuyer_Id = request.form.get('buyer_Id')
+            print(bbuyer_Id)
+            cur = mysql.connection.cursor()
+            if bbuyer_Id == 'All Buyers':
+                cur.execute(
+                    "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(
+                        UUser_Id))
+            else:
+                cur.execute(
+                    "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}' and transaction.buyer_Id = '{}'".format(
+                        UUser_Id, bbuyer_Id))
+            result = cur.fetchall()
+            columns = [h[0] for h in cur.description]
+            cur.close()
+
+        return render_template('/FPO/transactions.html', title='My Transactions', table=result, columns=columns,
+                               traders=traders, buyer_Id=bbuyer_Id)
+
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
 @app.route('/trader_transactions', methods=['GET', 'POST'])  # trader transaction
 def trader_transactions():
     if not session.get('Username') is None:
@@ -570,7 +614,7 @@ def create_session(account):
         return redirect(url_for('farmer_dashboard'))
 
     elif session['profession'] == 'FPO':
-        return render_template('FPO_dashboard.html')
+        return redirect(url_for('farmer_dashboard'))
 
     elif session['profession'] == 'Trader':
         return redirect(url_for('trader_dashboard'))
