@@ -8,7 +8,7 @@
     <form method = 'POST' >
         <div class = "container d-flex justify-content-center align-items-center">
 
-            <div class = "m-3">
+            <div class = "col-md-12" style="background-color:red">
                 <div class="mandi_board_storage_selection">
                     <form method="post" class="form1">
                          <select name="mandi_board_selection" required>
@@ -24,7 +24,7 @@
                             {% endfor %}
                          </select>
                         <input type="text" placeholder="type crop price" name="crop_price">
-                        <button type="submit" class = "btn btn-success"> Search </button>
+                        <button type="submit" class="btn btn-success float-right" > Search </button>
                     </form>
                 </div>
             </div>
@@ -40,11 +40,11 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Mandi Name</th>
-                <th>Crop Name</th>
-                <th>Seller ID</th>
-                <th>Price</th>
-                <th>Buy</th>
+                <th class="table-boot1">Mandi Name</th>
+                <th class="table-boot1">Crop Name</th>
+                <th class="table-boot1">Seller ID</th>
+                <th class="table-boot1">Price</th>
+                <th class="table-boot1">Buy</th>
             </tr>
             </thead>
             <tbody>
