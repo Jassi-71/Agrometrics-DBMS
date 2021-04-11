@@ -1,21 +1,39 @@
-{% extends "/Trader/base.html" %}
+{% extends "/farmer/base.html" %}
 {#{% load static %}#}
+
+{% block more_css %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+{% endblock %}
 
 {% block content %}
     <div style="padding: 40px">
-        <div style="margin-left: 400px; display: inline-block;background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
-            <h5>Total Spendings</h5>
+        <div style="margin-left: 470px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
+            <h5>Total Spending</h5>
+            <h6>{{ TotalIncome }}</h6>
 
         </div>
-        <div style="margin-left: 80px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
-            <h5>Total Trade Charges Paid</h5>
+        <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
+            <h5>Total Trade Charges</h5>
+            <h6>{{ MonthIncome }}</h6>
         </div>
-        <div style="margin-left: 80px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
-            <h5>Transactions</h5>
+        <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
+            <h5>Total Transactions</h5>
+            <h6>{{ TotalTax }}</h6>
         </div>
     </div>
-    <div class="header" style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 350px; margin-top: 30px; display: inline-block">
-        <h3>{{ title }}</h3>
+    <div
+         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 400px; margin-top: 30px; display: inline-block">
+        <h3>Monthly Income</h3>
 
         <canvas id="chart" width="400" height="400"></canvas>
         <script>
@@ -30,8 +48,8 @@
 
                 datasets: [{
                     fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
+                    strokeColor: "rgb(61,169,60,0.5)",
+                    pointColor: "rgb(25,56,205)",
                     data: [
                         {% for item in values %}
                             "{{ item }}",
@@ -66,9 +84,9 @@
         </script>
     </div>
 
-    <div class="header"
-         style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 100px; margin-top: 30px; display: inline-block">
-        <h3>{{ title1 }}</h3>
+    <div
+         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 100px; margin-top: 30px; display: inline-block">
+        <h3>Amount of each crop sold</h3>
 
         <canvas id="chart1" width="400" height="400"></canvas>
         <script>
@@ -83,7 +101,7 @@
 
                 datasets: [{
                     fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
+                    strokeColor: "rgb(61,169,60,0.5)",
                     pointColor: "rgba(151,187,205,1)",
                     data: [
                         {% for item in values1 %}
@@ -117,4 +135,30 @@
 
         </script>
     </div>
+    <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="text-align: center">Register For Policy</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('add_storage_space') }}" method="POST">
+                        <div class="form-group">
+                            <label>Policy ID:</label>
+                            <input type="text" class="form-control" name="Storage_Id" required="1">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="submit">Register for policy</button>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

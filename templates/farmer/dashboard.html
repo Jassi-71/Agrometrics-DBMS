@@ -17,26 +17,26 @@
 
 {% block content %}
     <div style="padding: 40px">
-        <div style="margin-left: 250px;padding: 20px; display: inline-block;background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 330px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Total Income</h5>
             <h6>{{ TotalIncome }}</h6>
 
         </div>
-        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>This month income</h5>
             <h6>{{ MonthIncome }}</h6>
         </div>
-        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Total Taxes Paid</h5>
             <h6>{{ TotalTax }}</h6>
         </div>
-        <div style="margin-left: 50px;padding: 20px; display: inline-block; background-color: #ede4fa; height: 100px; width: 250px; text-align: center">
+        <div style="margin-left: 50px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
             <h5>Taxes Paid This month</h5>
             <h6>{{ MonthTax }}</h6>
         </div>
     </div>
-    <div class="header"
-         style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 350px; margin-top: 30px; display: inline-block">
+    <div
+         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 400px; margin-top: 30px; display: inline-block">
         <h3>Monthly Income</h3>
 
         <canvas id="chart" width="400" height="400"></canvas>
@@ -52,8 +52,8 @@
 
                 datasets: [{
                     fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
+                    strokeColor: "rgb(61,169,60,0.5)",
+                    pointColor: "rgb(25,56,205)",
                     data: [
                         {% for item in values %}
                             "{{ item }}",
@@ -88,8 +88,8 @@
         </script>
     </div>
 
-    <div class="header"
-         style="height: 450px; width: 450px; color: #6d67cb;background-color: #ede4fa;  padding:20px;margin-left: 100px; margin-top: 30px; display: inline-block">
+    <div
+         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 100px; margin-top: 30px; display: inline-block">
         <h3>Amount of each crop sold</h3>
 
         <canvas id="chart1" width="400" height="400"></canvas>
@@ -105,7 +105,7 @@
 
                 datasets: [{
                     fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
+                    strokeColor: "rgb(61,169,60,0.5)",
                     pointColor: "rgba(151,187,205,1)",
                     data: [
                         {% for item in values1 %}
@@ -139,8 +139,8 @@
 
         </script>
     </div>
-    <div style="height: 650px">
-        <div class="page-wrapper" style="width: 550px; margin-left: 280px; display: inline-block; margin-top: 50px;">
+    <div style="height: 650px; margin-top: 40px; ">
+        <div class="page-wrapper" style="width: 600px; margin-left: 320px; display: inline-block; margin-top: 50px;">
             <div class="content">
                 <div class="row">
                     {#                <div class="col-sm-4 col-3">#}
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <div class="page-wrapper" style="width: 550px; margin-left: 70px; display: inline-block; margin-top: 50px;">
+        <div style="width: 600px; margin-left: 50px; display: inline-block; margin-top: 30px; padding: 20px; ">
             <div class="content">
                 <div class="row">
                     {#                <div class="col-sm-4 col-3">#}
