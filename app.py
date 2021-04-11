@@ -59,7 +59,21 @@ def farmer_insert():
         mysql.connection.commit()
         return redirect(url_for('farmer_crops'))
 
+@app.route('/update',methods=['POST','GET'])
+def update():
 
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        crop_id = request.form['crop_id']
+        print(crop_id)
+        quality = request.form['quality']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        user_id =session.get('User_Id')
+        print("PLS WORK")
+        cursor.execute(f"UPDATE crop_seller SET  Quality_10 ='{quality}', Price_1kg='{price}',Quantity_Kg='{quantity}' WHERE Crop_Id='{crop_id}' AND Seller_Id='u1'")
+        mysql.connection.commit()
+        return redirect(url_for('farmer_crops'))
 @app.route('/farmer_delete/<string:id_data>', methods=['POST', 'GET'])
 def farmer_delete(id_data):
     user_id = session.get('User_Id')
