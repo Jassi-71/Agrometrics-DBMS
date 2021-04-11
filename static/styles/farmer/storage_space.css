@@ -1,7 +1,7 @@
 
 h3{
   font-size: 30px;
-  color: #fff;
+  color: linear-gradient(to right, #2a7c5a, #1ccf85);;
   text-transform: uppercase;
   font-weight: 300;
   text-align: center;
@@ -12,20 +12,20 @@ table{
   table-layout: fixed;
 }
 .tbl-header{
-  background-color: rgba(255,255,255,0.3);
+  border: 1px solid rgb(129, 219, 129);
  }
 .tbl-content{
   height:200px;
   overflow-x:auto;
   margin-top: 0px;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px linear-gradient(to right, #2a7c5a, #1ccf85);
 }
 th{
   padding: 20px 15px;
   text-align: left;
   font-weight: 500;
   font-size: 17px;
-  color: #fff;
+  color:linear-gradient(to right, #2a7c5a, #1ccf85) ;
   text-transform: uppercase;
 }
 td{
@@ -34,8 +34,7 @@ td{
   vertical-align:middle;
   font-weight: 300;
   font-size: 15px;
-  color: #fff;
-  border-bottom: solid 1px rgba(255,255,255,0.1);
+  border: 1px solid rgb(129, 219, 129);
 }
 
 
@@ -43,8 +42,6 @@ td{
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
 body{
-  background: -webkit-linear-gradient(left, #2a7c5a, #1ccf85);
-  background: linear-gradient(to right, #2a7c5a, #1ccf85);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -61,10 +58,10 @@ section{
     width: 6px;
 }
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -webkit-box-shadow: inset 0 0 6px linear-gradient(to right, #2a7c5a, #1ccf85);
 }
 ::-webkit-scrollbar-thumb {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -webkit-box-shadow: inset 0 0 6px linear-gradient(to right, #2a7c5a, #1ccf85);
 }
 
 .mandi_board_storage_selection
@@ -83,7 +80,7 @@ section{
 	border-radius: 5px;
 	background-color: #32966c;
 	list-style: none;
-	color:#fff;
+	color:linear-gradient(to right, #2a7c5a, #1ccf85);
 	align:center;
 	width:30%;
     max-height:200px;
@@ -99,7 +96,7 @@ section{
     padding: 1rem;
 	border-radius: 5px;
 	background-color: #36ad7c;
-	color:#fff;
+	color:linear-gradient(to right, #2a7c5a, #1ccf85);
 	align:center;
 	width:15%;
     max-height:150px;

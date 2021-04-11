@@ -95,7 +95,7 @@ def farmer_transactions():
             bbuyer_Id = request.form.get('buyer_Id')
             print(bbuyer_Id)
             cur = mysql.connection.cursor()
-            if (bbuyer_Id == 'All'):
+            if bbuyer_Id == 'All':
                 cur.execute(
                     "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.trader on trader.User_Id = transaction.buyer_Id where transaction.seller_Id = '{}'".format(
                         UUser_Id))
@@ -142,7 +142,7 @@ def trader_transactions():
             sseller_Id = request.form.get('seller_Id')
             # print(sseler_Id)
             cur = mysql.connection.cursor()
-            if (sseller_Id == 'All'):
+            if sseller_Id == 'All':
                 cur.execute(
                     "Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Amount from dbms_project.transaction join dbms_project.farmers on farmers.User_Id_Linked = transaction.seller_Id where transaction.buyer_Id = '{}'".format(
                         UUser_Id))
@@ -161,6 +161,67 @@ def trader_transactions():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/trader_crop_price',methods=['GET','POST'])
+def trader_crop_price():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT User_Id,Name FROM dbms_project.mandi_board")
+        all_mandi_board_data = cursor.fetchall()
+
+        cursor.execute("SELECT Crop_Id, Crop_Name FROM dbms_project.crops")
+        all_crop_name = cursor.fetchall()
+
+
+        cursor.execute("SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board")
+        all_crops_table=cursor.fetchall()
+        cursor.close()
+        if request.method == "POST":
+            cursor = mysql.connection.cursor()
+            mandi_boardID_selected = request.form['mandi_board_selection']
+            crop_output_data=request.form['crop_selection']
+            crop_price=request.form['crop_price']
+            if mandi_boardID_selected == 'All':
+                if crop_output_data == 'All':
+                    if crop_price == '':
+                        pass
+                    else:
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE Price_1kg<'{crop_price}'")
+                        all_crops_table=cursor.fetchall()
+                else:
+                    if crop_price == '':
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                                                    join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}'")
+                        all_crops_table = cursor.fetchall()
+                    else:
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                                                                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<'{crop_price}'")
+                        all_crops_table = cursor.fetchall()
+            else:
+                if crop_output_data == 'All':
+                    if crop_price == '':
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                                                    join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}'")
+                        all_crops_table = cursor.fetchall()
+                    else:
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}' AND Price_1kg<'{crop_price}' ")
+                        all_crops_table=cursor.fetchall()
+                else:
+                    if crop_price == '':
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                                                                       join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND mandi_board.Name='{mandi_boardID_selected}' ")
+                        all_crops_table = cursor.fetchall()
+                    else:
+                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                                                                                               join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<'{crop_price}' AND mandi_board.Name='{mandi_boardID_selected}'")
+                        all_crops_table = cursor.fetchall()
+            cursor.close()
+        return render_template('/Trader/crop_price.html',mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name,all_crops_table=all_crops_table)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
@@ -232,109 +293,131 @@ def mandi_board_transactions():
 
 @app.route('/trader_dashboard', methods=['GET', 'POST'])
 def trader_dashboard():
-    tra1gv = []
-    tra1gh = []
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM dbms_project.seller")
-    result = cur.fetchall()
-    maximum = 0
-    for d in result:
-        if d['Designation'] == 'F':
-            tra1gv.append((round(d['Income'])))
-            maximum = max(maximum, (round(d['Income'])))
-            tra1gh.append(d['Name'])
-            # cur.close()
-    # print(Income)
-    # print(Name)
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        tra1gv = []
+        tra1gh = []
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM dbms_project.seller")
+        result = cur.fetchall()
+        maximum = 0
+        for d in result:
+            if d['Designation'] == 'F':
+                tra1gv.append((round(d['Income'])))
+                maximum = max(maximum, (round(d['Income'])))
+                tra1gh.append(d['Name'])
 
-    tra2gv = []
-    tra2gh = []
+        tra2gv = []
+        tra2gh = []
 
-    # cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM dbms_project.transaction")
-    result1 = cur.fetchall()
-    maximum1 = 0
-    for d in result1:
-        # if (d['Designation'] == 'F'):
-        tra2gv.append((round(d['Quantity_Kg'])))
-        maximum1 = max(maximum1, (round(d['Quantity_Kg'])))
-        tra2gh.append(d['seller_Id'])
+        # cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM dbms_project.transaction")
+        result1 = cur.fetchall()
+        maximum1 = 0
+        for d in result1:
+            tra2gv.append((round(d['Quantity_Kg'])))
+            maximum1 = max(maximum1, (round(d['Quantity_Kg'])))
+            tra2gh.append(d['seller_Id'])
 
-    cur.execute("SELECT User_Id, Login, Password, Name, State FROM dbms_project.seller;")
-    result1 = cur.fetchall()
+        cur.execute("SELECT User_Id, Login, Password, Name, State FROM dbms_project.seller;")
+        result1 = cur.fetchall()
 
-    cur.close()
+        cur.execute(
+            "select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by month(transaction.Date_Of_Transaction);")
+        Total_Spending = cur.fetchall();
+        monthincome = 0
+        for i in Total_Spending:
+            monthincome = i['Amount']
+        cur.execute(
+            "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='u1' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
+        Total_Trade_Charges = cur.fetchall();
+        TotalTax = 0
+        for i in Total_Trade_Charges:
+            TotalTax += round(i['amount'] * i['Trade_Charges'], 2)
+        cur.execute(
+            "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
+        Total_Transactions = cur.fetchall();
+        MonthTax = 0
+        for i in Total_Transactions:
+            MonthTax += round(i['amount'] * i['Trade_Charges'], 2)
+        cur.close()
 
-    # print(Income1)
-    # print(Name1)
-    return render_template('/Trader/dashboard.html', title='Only Farmers Income Chart', max=maximum + 1000,
-                           labels=tra1gh, values=tra1gv, title1='Tansaction Chat of Farmer', max1=maximum1 + 4,
-                           labels1=tra2gh, values1=tra2gv, data=result1)
+        return render_template('/Trader/dashboard.html', title='Only Farmers Income Chart', max=maximum + 1000,
+                               labels=tra1gh, values=tra1gv, title1='Tansaction Chat of Farmer', max1=maximum1 + 4,
+                               labels1=tra2gh, values1=tra2gv, data=result1)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
 @app.route('/farmer_dashboard', methods=['GET', 'POST'])
 def farmer_dashboard():
-    far1gv = []
-    far1gh = []
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT  monthname((Date_Of_Transaction)) as month,SUM(Amount) as amount FROM dbms_project.transaction where seller_Id = 'u1' and YEAR(Date_Of_Transaction) = '2020'GROUP BY MONTH(Date_Of_Transaction);")
-    result = cur.fetchall()
-    maximum = 0
-    for d in result:
-        far1gv.append((round(d['amount'])))
-        maximum = max(maximum, (round(d['amount'])))
-        far1gh.append(d['month'])
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        far1gv = []
+        far1gh = []
+        cur = mysql.connection.cursor()
+        cur.execute(
+            f"SELECT  monthname((Date_Of_Transaction)) as month,SUM(Amount) as amount FROM dbms_project.transaction where seller_Id = '{user_id}' and YEAR(Date_Of_Transaction) = '2020'GROUP BY MONTH(Date_Of_Transaction);")
+        result = cur.fetchall()
+        maximum = 0
+        for d in result:
+            far1gv.append((round(d['amount'])))
+            maximum = max(maximum, (round(d['amount'])))
+            far1gh.append(d['month'])
 
-    far2gv = []
-    far2gh = []
-    cur.execute(
-        "select Crop_Name,temp.Quantity,temp.Amount from crops,(SELECT Crop_Id,SUM(Quantity_Kg) as Quantity,SUM(Amount) as Amount FROM dbms_project.transaction WHERE seller_Id='u10' group by(Crop_Id)) as temp where crops.Crop_Id=temp.Crop_Id;")
-    result1 = cur.fetchall()
-    maximum1 = 0
-    for d in result1:
-        # if (d['Designation'] == 'F'):
-        far2gv.append((round(d['Amount'])))
-        maximum1 = max(maximum1, (round(d['Amount'])))
-        far2gh.append(d['Crop_Name'])
+        far2gv = []
+        far2gh = []
+        cur.execute(
+            f"select Crop_Name,temp.Quantity,temp.Amount from crops,(SELECT Crop_Id,SUM(Quantity_Kg) as Quantity,SUM(Amount) as Amount FROM dbms_project.transaction WHERE seller_Id='{user_id}' group by(Crop_Id)) as temp where crops.Crop_Id=temp.Crop_Id;")
+        result1 = cur.fetchall()
+        maximum1 = 0
+        for d in result1:
+            # if (d['Designation'] == 'F'):
+            far2gv.append((round(d['Amount'])))
+            maximum1 = max(maximum1, (round(d['Amount'])))
+            far2gh.append(d['Crop_Name'])
 
-    cur.execute(
-        "Select Crop_Name,SUM(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join crops on transaction.Crop_Id = crops.Crop_Id  group by crops.Crop_Id order by sum(Amount) desc;-- year(Date_Of_Transaction)=year(curdate())")
-    result1 = cur.fetchall()
-    cur.execute(
-        "Select government_policy.Policy_Id,Name, Details from seller_policy join government_policy on government_policy.Policy_Id = seller_policy.Policy_Id and Expires_On>curdate() and Implemented_On<curdate();")
-    result2 = cur.fetchall()
-    cur.execute(
-        "select seller_Id,seller.Name,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join seller where seller.User_Id=transaction.seller_Id and seller.Designation='F' and seller_Id='u1' group by seller_Id;")
-    TotalIncome = cur.fetchall();
-    totalincome = 0
-    for i in TotalIncome:
-        totalincome = i['Amount']
-    cur.execute(
-        "select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by month(transaction.Date_Of_Transaction);")
-    ThisMonthIncome = cur.fetchall();
-    monthincome = 0
-    for i in ThisMonthIncome:
-        monthincome = i['Amount']
-    cur.execute(
-        "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='u1' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-    TotalTaxPaid = cur.fetchall();
-    TotalTax = 0
-    for i in TotalTaxPaid:
-        TotalTax += round(i['amount'] * i['Trade_Charges'], 2)
-    cur.execute(
-        "select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='u1' and year(transaction.Date_Of_Transaction)=year(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-    TaxThisMonth = cur.fetchall();
-    MonthTax = 0
-    for i in TaxThisMonth:
-        MonthTax += round(i['amount'] * i['Trade_Charges'], 2)
-    cur.close()
+        cur.execute(
+            f"Select Crop_Name,SUM(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join crops on transaction.Crop_Id = crops.Crop_Id  group by crops.Crop_Id order by sum(Amount) desc;-- year(Date_Of_Transaction)=year(curdate())")
+        result1 = cur.fetchall()
+        cur.execute(
+            f"Select government_policy.Policy_Id,Name, Details from seller_policy join government_policy on government_policy.Policy_Id = seller_policy.Policy_Id and Expires_On>curdate() and Implemented_On<curdate();")
+        result2 = cur.fetchall()
+        cur.execute(
+            f"select seller_Id,seller.Name,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join seller where seller.User_Id=transaction.seller_Id and seller.Designation='F' and seller_Id='{user_id}' group by seller_Id;")
+        TotalIncome = cur.fetchall();
+        totalincome = 0
+        for i in TotalIncome:
+            totalincome = i['Amount']
+        cur.execute(
+            f"select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='{user_id}' and month(transaction.Date_Of_Transaction)=month(curdate()) group by month(transaction.Date_Of_Transaction);")
+        ThisMonthIncome = cur.fetchall();
+        monthincome = 0
+        for i in ThisMonthIncome:
+            monthincome = i['Amount']
+        cur.execute(
+            f"select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='{user_id}' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
+        TotalTaxPaid = cur.fetchall();
+        TotalTax = 0
+        for i in TotalTaxPaid:
+            TotalTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
+        cur.execute(
+            f"select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction WHERE seller_Id='{user_id}' and month(transaction.Date_Of_Transaction)=month(curdate()) group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
+        TaxThisMonth = cur.fetchall();
+        MonthTax = 0
+        for i in TaxThisMonth:
+            MonthTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
+        cur.close()
 
-    print(totalincome)
-    print(monthincome)
-    return render_template('/farmer/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
-                           max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
-                           TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
+        print(totalincome)
+        print(monthincome)
+        return render_template('/farmer/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
+                               max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
+                               TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])

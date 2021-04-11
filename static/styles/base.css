@@ -10,16 +10,15 @@
     font-family: 'Josefin Sans', sans-serif;
 
 }
-
 #head:hover {
-    background-color: #0d940d;
+    background: linear-gradient(to right, #2a7c5a, #1ccf85);;
     /* background-color: #24ff2d; */
     /*color: #336c33;*/
 }
 #head{
     margin-left: 10px;
     /*color: #8dc1a4;*/
-    color: #016200;
+    color: #094f0e;
 }
 
 body {
@@ -34,7 +33,7 @@ body {
 .wrapper {
     width: 220px;
     height: 100%;
-    background: #0d940d;
+    background: linear-gradient(to right, #2a7c5a, #1ccf85);;
     padding: 10px 0px;
     position: fixed;
 }
@@ -62,7 +61,7 @@ body {
 
 .wrapper .main_content .header {
     padding: 10px;
-    background: #fff;
+    background: linear-gradient(to right, #2a7c5a, #1ccf85);
     color: #717171;
     /*border-bottom: 1px solid #b0eacd;*/
 }
@@ -80,7 +79,7 @@ body {
 .header {
     width: 100%;
     height: 50px;
-    background: #0d940d;
+    background: linear-gradient(to left,#2a7c5a, #1ccf85);;
     text-decoration: #717171;
 }
 
@@ -104,7 +103,7 @@ body {
 }
 
 .header .dropdown-menu {
-    background: #0d940d;
+    background: linear-gradient(to right, #2a7c5a, #1ccf85);
 }
 
 table {
@@ -157,4 +156,12 @@ section {
 
 ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.table-boot{
+    font-size: 18px;
+}
+
+.table-boot1{
+    font-size: 18px;
 }
