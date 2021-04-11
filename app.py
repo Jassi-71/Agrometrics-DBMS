@@ -500,8 +500,8 @@ def add_storage_space():
         return redirect(url_for('farmer_storage'))
 
 
-@app.route('/farmer_mandi_board', methods=['GET', 'POST'])
-def farmer_mandi_board():
+@app.route('/mandi_board', methods=['GET', 'POST'])
+def mandi_board():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM dbms_project.mandi_board")
@@ -545,12 +545,11 @@ def farmer_mandi_board():
                 crops_list = cursor.fetchall()
             print("Mandi " + mandi_boardID_selected)
             print("Crops " + crop_selected)
-        return render_template('/farmer/farmer_mandi_board.html', data=mandi_data, crops_list=crops_list,
-                               mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name)
+        return render_template('mandi_board.html', data=mandi_data, crops_list=crops_list,
+                               mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name,profession=session['profession'])
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
-
 
 @app.route('/logout')
 def logout():
