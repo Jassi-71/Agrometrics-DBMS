@@ -692,9 +692,9 @@ def check_login_info():
         Username = request.form['Username']
         password = request.form['inputPassword']
         user_profession = request.form['profession']
-        if user_profession == 'Farmer' or user_profession == 'FPO':
+        if user_profession == 'Farmer':
             cursor = mysql.connection.cursor()
-            cursor.execute('SELECT * FROM seller WHERE Login = % s AND Password = % s', (Username, password,))
+            cursor.execute(f"SELECT * FROM seller WHERE Login = '{Username}' AND Password = '{password}' AND Designation = '{'F'}'")
 
             account = cursor.fetchone()
             cursor.close()
@@ -703,7 +703,17 @@ def check_login_info():
                 return create_session(account)
             else:
                 return render_template('Login.html')
+        elif user_profession == 'FPO' :
+            cursor = mysql.connection.cursor()
+            cursor.execute(f"SELECT * FROM seller WHERE Login = '{Username}' AND Password = '{password}' AND Designation = '{'FP'}'")
 
+            account = cursor.fetchone()
+            cursor.close()
+            if account:
+                session['profession'] = user_profession
+                return create_session(account)
+            else:
+                return render_template('Login.html')
         elif user_profession == 'Mandi_Board':
             cursor = mysql.connection.cursor()
             cursor.execute('SELECT * FROM mandi_board WHERE Login = % s AND Password = % s', (Username, password,))
