@@ -174,12 +174,10 @@
             </div>
         </div>
 
-        <div style="width: 600px; margin-left: 50px; display: inline-block; margin-top: 30px; padding: 20px; ">
+        <div class="page-wrapper" style="width: 600px; margin-left: 50px; display: inline-block; margin-top: 30px; padding: 20px; ">
             <div class="content">
                 <div class="row">
-                    {#                <div class="col-sm-4 col-3">#}
                     <h4 class="page-title">Recommended Policies</h4>
-                    {#                </div>#}
                 </div>
                 <div class="row" style="height: 500px; overflow-y: auto">
                     <div class="col-md-12">
@@ -193,19 +191,47 @@
                                     <th>Add policy</th>
                                 </tr>
                                 </thead>
-                                <tbody>
                                 {% for row in data1 %}
-                                    <tr>
-                                        <td>{{ row['Policy_Id'] }}</td>
-                                        <td>{{ row['Name'] }}</td>
-                                        <td>{{ row['Details'] }}</td>
-                                        <td>
-                                            <a href="" class="btn btn-outline-success" data-toggle="modal"
-                                               data-target="#mymodal">Add</a>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ row['Policy_Id'] }}</td>
+                                    <td>{{ row['Name'] }}</td>
+                                    <td>{{ row['Details'] }}</td>
+                                    <td style="padding-left: 40px; padding-top: 16px">
+                                        <a  href="" class="btn btn-success" data-toggle="modal"
+                                           data-target="#mymodal{{ row['Policy_Id'] }}">Add</a>
+                                    </td>
+                                </tr>
                                 {% endfor %}
-                                </tbody>
+                                {% for row in data1 %}
+                            <div id="mymodal{{ row['Policy_Id'] }}" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title" style="text-align: center">Register For Policy</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ url_for('farmer_policy_insert') }}" method="POST">
+                                                <div class="form-group">
+                                                    <label>Policy Name:</label>
+                                                    <input type="text" class="form-control" name="Policy_Name" required="1" value="{{row.Name}}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Policy Id:</label>
+                                                    <input type="text" class="form-control" name="Policy_Id" required="1" value="{{row.Policy_Id}}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary" type="submit">Register for policy</button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>{% endfor %}
                             </table>
                         </div>
                     </div>
@@ -213,30 +239,6 @@
             </div>
         </div>
     </div>
-    <div id="mymodal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" style="text-align: center">Register For Policy</h4>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ url_for('add_storage_space') }}" method="POST">
-                        <div class="form-group">
-                            <label>Policy ID:</label>
-                            <input type="text" class="form-control" name="Storage_Id" required="1">
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Register for policy</button>
-                        </div>
 
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 {% endblock %}

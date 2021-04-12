@@ -17,7 +17,7 @@
 {% block content %}
     <div style="padding: 40px">
         <div style="margin-left: 470px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 250px; text-align: center">
-            <h5>Total Spending</h5>
+            <h5 >Total Spending</h5>
             <h6>{{ Total_Spending }}</h6>
 
         </div>
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div
-         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 400px; margin-top: 30px; display: inline-block">
+            style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 400px; margin-top: 30px; display: inline-block">
         <h3>Monthly Income</h3>
 
         <canvas id="chart" width="400" height="400"></canvas>
@@ -83,81 +83,74 @@
         </script>
     </div>
 
-    <div
-         style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 100px; margin-top: 30px; display: inline-block">
-        <h3>Amount of each crop sold</h3>
+    <div style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 100px; margin-top: 30px; display: inline-block">
+        <h3> Crops Ratio Graph</h3>
 
         <canvas id="chart1" width="400" height="400"></canvas>
         <script>
-            // bar chart data
-            var barData1 = null
-            barData1 = {
-                labels: [
-                    {% for item in labels1 %}
-                        "{{ item }}",
-                    {% endfor %}
-                ],
-
-                datasets: [{
-                    fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgb(61,169,60,0.5)",
-                    pointColor: "rgba(151,187,205,1)",
-                    data: [
-                        {% for item in values1 %}
-                            "{{ item }}",
-                        {% endfor %}
-                    ]
-                }
-                ]
-            };
-
-            var mychart1 = null
-            mychart1 = document.getElementById("chart1").getContext("2d");
-
-            steps1 = 10;
-            max1 = {{max1}}
-
-                // draw bar chart
-                new Chart(mychart1).Bar(barData1, {
-                        scaleOverride: true,
-                        scaleSteps: steps,
-                        scaleStepWidth: Math.ceil(max1 / steps1),
-                        scaleStartValue: 0,
-                        scaleShowVerticalLines: true,
-                        scaleShowGridLines: true,
-                        barShowStroke: true,
-                        scrollbars: true,
-                        scrolling: scrollX,
-                        scaleShowLabels: true,
-                    }
-                );
+            var pieData = [
+                {% for item, label, colors in set %}
+                    {
+                        value: {{item}},
+                        label: "{{label}}(in Rs) ",
+                        color: "{{colors}}"
+                    },
+                {% endfor %}
+            ];
+            var mychart = document.getElementById("chart1").getContext("2d");
+            steps = 100
+            max = {{ max1 }}
+                new Chart(document.getElementById("chart1").getContext("2d")).Pie(pieData);
 
         </script>
-    </div>
-    <div id="mymodal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" style="text-align: center">Register For Policy</h4>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ url_for('add_storage_space') }}" method="POST">
-                        <div class="form-group">
-                            <label>Policy ID:</label>
-                            <input type="text" class="form-control" name="Storage_Id" required="1">
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Register for policy</button>
-                        </div>
-
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
+        {#        <h3>Amount of each crop sold</h3>#}
+        {##}
+        {#        <canvas id="chart1" width="400" height="400"></canvas>#}
+        {#        <script>#}
+        {#            // bar chart data#}
+        {#            var barData1 = null#}
+        {#            barData1 = {#}
+        {#                labels: [#}
+        {#                    {% for item in labels1 %}#}
+        {#                        "{{ item }}",#}
+        {#                    {% endfor %}#}
+        {#                ],#}
+        {##}
+        {#                datasets: [{#}
+        {#                    fillColor: "rgba(151,187,205,0.2)",#}
+        {#                    strokeColor: "rgb(61,169,60,0.5)",#}
+        {#                    pointColor: "rgba(151,187,205,1)",#}
+        {#                    data: [#}
+        {#                        {% for item in values1 %}#}
+        {#                            "{{ item }}",#}
+        {#                        {% endfor %}#}
+        {#                    ]#}
+        {#                }#}
+        {#                ]#}
+        {#            };#}
+        {##}
+        {#            var mychart1 = null#}
+        {#            mychart1 = document.getElementById("chart1").getContext("2d");#}
+        {##}
+        {#            steps1 = 10;#}
+        {#            max1 = {{max1}}#}
+        {##}
+        {#                // draw bar chart#}
+        {#                new Chart(mychart1).Bar(barData1, {#}
+        {#                        scaleOverride: true,#}
+        {#                        scaleSteps: steps,#}
+        {#                        scaleStepWidth: Math.ceil(max1 / steps1),#}
+        {#                        scaleStartValue: 0,#}
+        {#                        scaleShowVerticalLines: true,#}
+        {#                        scaleShowGridLines: true,#}
+        {#                        barShowStroke: true,#}
+        {#                        scrollbars: true,#}
+        {#                        scrolling: scrollX,#}
+        {#                        scaleShowLabels: true,#}
+        {#                    }#}
+        {#                );#}
+        {##}
+        {#        </script>#}
     </div>
 
 {% endblock %}
