@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template, request, Markup, url_for, session
+from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
 
@@ -47,6 +47,7 @@ def farmer_crops():
 @app.route('/farmer_insert', methods=['POST'])
 def farmer_insert():
     if request.method == "POST":
+        flash("Data Inserted Successfully")
         cursor = mysql.connection.cursor()
         crop_id = request.form['crop_id']
         quality = request.form['quality']
