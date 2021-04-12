@@ -74,7 +74,6 @@ def farmer_policy_insert():
 
 @app.route('/update',methods=['POST','GET'])
 def update():
-
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
         crop_id = request.form['crop_id']
@@ -192,6 +191,21 @@ def FPO_transactions():
 def trader_buy_crop():
     if not session.get('Username') is None:
         if request.method == 'POST':
+            cursor=mysql.connection.cursor()
+            crop_name=request.form['crop_name']
+            mandi_name=request.form['Name']
+            crop_price=request.form['crop_price']
+            buyer_crop_quantity=request.form['crop_quantity']
+            seller_id=request.form['Seller_Id']
+            cursor.execute(f"SELECT Crop_Id FROM crops WHERE Crop_Name='{crop_name}'")
+            crop_id=cursor.fetchone()
+            cursor.execute(f"SELECT Quantity_Kg FROM dbms_project.crop_seller WHERE Seller_Id='{seller_id}' AND Crop_Id='{crop_id}'")
+            seller_crop_quantity=cursor.fetchone()
+
+            if buyer_crop_quantity<=seller_crop_quantity:
+                print('YES')
+            else:
+                print('No')
             return redirect(url_for('trader_crop_price'))
     else:
         print("No username found in session")
@@ -255,7 +269,7 @@ def trader_crop_price():
         cursor.execute("SELECT Crop_Id, Crop_Name FROM dbms_project.crops")
         all_crop_name = cursor.fetchall()
 
-        cursor.execute("SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+        cursor.execute("SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Trade_Charges,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board")
         all_crops_table = cursor.fetchall()
         cursor.close()
@@ -269,35 +283,35 @@ def trader_crop_price():
                     if crop_price == '':
                         pass
                     else:
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Trade_Charges,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE Price_1kg<='{crop_price}'")
                         all_crops_table=cursor.fetchall()
                 else:
                     if crop_price == '':
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Trade_Charges,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                                                     join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}'")
                         all_crops_table = cursor.fetchall()
                     else:
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Trade_Charges,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                                                                             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<='{crop_price}'")
                         all_crops_table = cursor.fetchall()
             else:
                 if crop_output_data == 'All':
                     if crop_price == '':
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Trade_Charges,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                                                     join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}'")
                         all_crops_table = cursor.fetchall()
                     else:
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Trade_Charges,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                             join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}' AND Price_1kg<='{crop_price}' ")
                         all_crops_table = cursor.fetchall()
                 else:
                     if crop_price == '':
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Trade_Charges,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                                                                        join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND mandi_board.Name='{mandi_boardID_selected}' ")
                         all_crops_table = cursor.fetchall()
                     else:
-                        cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
+                        cursor.execute(f"SELECT crops.Crop_Id,crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Trade_Charges,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
                                                                                                join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<='{crop_price}' AND mandi_board.Name='{mandi_boardID_selected}'")
                         all_crops_table = cursor.fetchall()
             cursor.close()
