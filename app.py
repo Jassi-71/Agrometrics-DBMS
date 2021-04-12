@@ -73,8 +73,8 @@ def farmer_policy_insert():
         mysql.connection.commit()
         return redirect(url_for('farmer_dashboard'))
 
-@app.route('/update',methods=['POST','GET'])
-def update():
+@app.route('/update_crop_farmer',methods=['POST','GET'])
+def update_crop_farmer():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
         crop_id = request.form['crop_id']
