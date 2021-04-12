@@ -506,6 +506,20 @@ def farmer_dashboard():
         return redirect(url_for('check_login_info'))
 
 
+@app.route('/farmer_my_policies', methods=['GET', 'POST'])
+def farmer_my_policies():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        cur = mysql.connection.cursor()
+        cur.execute(
+            f"select Seller_Id,seller_policy.Policy_Id,Name,Details,Date_Registeration from seller_policy join government_policy where  Seller_Id='{user_id}' and government_policy.Policy_Id=seller_policy.Policy_Id;")
+        result = cur.fetchall()
+
+        return render_template('/Farmer/my_policies.html', data = result)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/analyst_dashboard', methods=['GET', 'POST'])
 def analyst_dashboard():
     if not session.get('Username') is None:
@@ -530,7 +544,27 @@ def FPO_dashboard():
 def mandi_board_dashboard():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
-        return render_template('/Mandi_Board/dashboard.html')
+        cursor = mysql.connection.cursor()
+        cursor.execute(f"select * from mandi_board where User_Id='{user_id}';")
+        name = cursor.fetchall();Mandiname='';Mandistate = '';Mandilocaltity = '';mandidistrict = '';
+        for i in name:
+            Mandiname = i['Name']
+            Mandistate = i['State']
+            Mandilocaltity = i['Locality']
+            Mandidistrict = i['District']
+        cursor.execute(f"select Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id= mandi_board.User_Id  group by Mandi_Board_Id order by Amount desc;")
+        table1 = cursor.fetchall()
+        cursor.execute(f"select Name, temp.Mandi_Board_Id, temp.Charges from mandi_board join (select storage_mandi_board_rent.Mandi_Board_Id,sum(Charges) as Charges from storage_mandi_board_rent join storage_mandi_board where storage_mandi_board_rent.Mandi_Board_Id=storage_mandi_board.Mandi_Board_Id and storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id group by storage_mandi_board_rent.Mandi_Board_Id) as temp where temp.Mandi_Board_Id=mandi_board.User_Id order by charges desc;")
+        table2 = cursor.fetchall()
+        count = 1
+        for i in table1:
+            i.update([("counter", count)])
+            count = count+1
+        count = 1
+        for i in table2:
+            i.update([("counter", count)])
+            count = count+1
+        return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
