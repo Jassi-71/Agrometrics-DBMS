@@ -196,13 +196,16 @@ def trader_buy_crop():
             crop_name=request.form['crop_name']
             mandi_name=request.form['Name']
             crop_price=request.form['crop_price']
-            buyer_crop_quantity=request.form['crop_quantity']
-            seller_id=request.form['Seller_Id']
+            buyer_crop_quantity=int(request.form['crop_quantity'])
+            seller_id=request.form['seller_id']
+
             cursor.execute(f"SELECT Crop_Id FROM crops WHERE Crop_Name='{crop_name}'")
             crop_id=cursor.fetchone()
-            cursor.execute(f"SELECT Quantity_Kg FROM dbms_project.crop_seller WHERE Seller_Id='{seller_id}' AND Crop_Id='{crop_id}'")
-            seller_crop_quantity=cursor.fetchone()
+            crop_id=crop_id['Crop_Id']
 
+            cursor.execute(f"SELECT Quantity_Kg FROM dbms_project.crop_seller WHERE Seller_Id='{seller_id}' AND Crop_Id='{crop_id}' ")
+            seller_crop_quantity1=cursor.fetchone()
+            seller_crop_quantity=int(seller_crop_quantity1['Quantity_Kg'])
             if buyer_crop_quantity<=seller_crop_quantity:
                 print('YES')
             else:
