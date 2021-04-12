@@ -59,8 +59,8 @@ def farmer_insert():
         mysql.connection.commit()
         return redirect(url_for('farmer_crops'))
 
-@app.route('/update',methods=['POST','GET'])
-def update():
+@app.route('/update_crop_farmer',methods=['POST','GET'])
+def update_crop_farmer():
 
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
@@ -173,6 +173,16 @@ def FPO_transactions():
         return redirect(url_for('check_login_info'))
 
 
+@app.route('/trader_buy_crop',methods=['GET','POST'])
+def trader_buy_crop():
+    if not session.get('Username') is None:
+        if request.method == 'POST':
+            return redirect(url_for('trader_crop_price'))
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
 @app.route('/trader_transactions', methods=['GET', 'POST'])  # trader transaction
 def trader_transactions():
     if not session.get('Username') is None:
@@ -245,7 +255,7 @@ def trader_crop_price():
                         pass
                     else:
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
-                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE Price_1kg<'{crop_price}'")
+                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE Price_1kg<='{crop_price}'")
                         all_crops_table=cursor.fetchall()
                 else:
                     if crop_price == '':
@@ -254,7 +264,7 @@ def trader_crop_price():
                         all_crops_table = cursor.fetchall()
                     else:
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
-                                                                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<'{crop_price}'")
+                                                                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<='{crop_price}'")
                         all_crops_table = cursor.fetchall()
             else:
                 if crop_output_data == 'All':
@@ -264,7 +274,7 @@ def trader_crop_price():
                         all_crops_table = cursor.fetchall()
                     else:
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
-                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}' AND Price_1kg<'{crop_price}' ")
+                            join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE mandi_board.Name='{mandi_boardID_selected}' AND Price_1kg<='{crop_price}' ")
                         all_crops_table = cursor.fetchall()
                 else:
                     if crop_price == '':
@@ -273,7 +283,7 @@ def trader_crop_price():
                         all_crops_table = cursor.fetchall()
                     else:
                         cursor.execute(f"SELECT crops.Crop_Name,mandi_board.Name,Price_1kg,Seller_Id,Quantity_Kg FROM crop_seller join crops on crops.Crop_Id=crop_seller.Crop_Id\
-                                                                                               join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<'{crop_price}' AND mandi_board.Name='{mandi_boardID_selected}'")
+                                                                                               join mandi_board on mandi_board.User_Id = crop_seller.Mandi_Board WHERE crops.Crop_Name ='{crop_output_data}' AND Price_1kg<='{crop_price}' AND mandi_board.Name='{mandi_boardID_selected}'")
                         all_crops_table = cursor.fetchall()
             cursor.close()
         return render_template('/Trader/crop_price.html', mandiID_output_data=all_mandi_board_data,
@@ -327,8 +337,8 @@ def mandi_board_transactions():
             sseller_Id = request.form.get('seller_Id')
             bbuyer_Id = request.form.get('bbuyer_Id')
             cur = mysql.connection.cursor()
-            if (sseller_Id == 'All Sellers'):
-                if (bbuyer_Id == 'All Buyers'):
+            if sseller_Id == 'All Sellers':
+                if bbuyer_Id == 'All Buyers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
                     where transaction.Mandi_Board_Id = {UUser_Id};")
@@ -337,8 +347,8 @@ def mandi_board_transactions():
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
                     where transaction.buyer_Id = '{bbuyer_Id}' and transaction.Mandi_Board_Id = '{UUser_Id}';")
 
-            elif (bbuyer_Id == 'All Buyers'):
-                if (sseller_Id == 'All Sellers'):
+            elif bbuyer_Id == 'All Buyers':
+                if sseller_Id == 'All Sellers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
                     where transaction.Mandi_Board_Id = {UUser_Id};")
