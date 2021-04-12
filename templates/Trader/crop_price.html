@@ -2,35 +2,36 @@
 
 {% block content  %}
     <div class = "container p-5" style="margin-left:290px;">
-    <div class="well text-center" style="margin-top:15px">
-        <h2 style="color: #094f0e;">Crops</h2>
-    </div>
-    <form method = 'POST' >
-        <div class = "container d-flex justify-content-center align-items-center">
-
-            <div class = "col-md-12" >
-                <div>
-                    <form method="post" class="form1">
-                         <select name="mandi_board_selection" required>
-                            <option value="All"> All Mandi Board </option>
-                            {% for val in mandiID_output_data %}
-                                <option value="{{ val['Name'] }}">{{ val['Name'] }}</option>
-                            {% endfor %}
-                        </select>
-                        <select name="crop_selection" class="select2" required>
-                            <option value="All"> All Crop</option>
-                            {% for val in crop_output_data %}
-                                <option value="{{ val['Crop_Name'] }}">{{ val['Crop_Name'] }}</option>
-                            {% endfor %}
-                         </select>
-                        <input type="text" placeholder="type crop price" name="crop_price">
-                        <button type="submit" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal" > Search </button>
-                    </form>
-                </div>
-            </div>
-
+        <div class="well text-center" style="margin-top:15px">
+            <h2 style="color: #094f0e;">Crops</h2>
         </div>
-    </form>
+        <form method = 'POST' >
+            <div class = "container d-flex justify-content-center align-items-center" >
+                 <form method="post" class="form1">
+                     <div class = "m-3">
+                         <select name="mandi_board_selection" required>
+                                <option value="All"> All Mandi Board </option>
+                                {% for val in mandiID_output_data %}
+                                    <option value="{{ val['Name'] }}">{{ val['Name'] }}</option>
+                                {% endfor %}
+                         </select>
+                     </div>
+                     <div class = "m-3">
+                         <select name="crop_selection" class="select2" required>
+                                <option value="All"> All Crop</option>
+                                {% for val in crop_output_data %}
+                                    <option value="{{ val['Crop_Name'] }}">{{ val['Crop_Name'] }}</option>
+                                {% endfor %}
+                         </select>
+                     </div>
+                     <div class = "m-3">
+                         <input type="text" placeholder="type crop price" name="crop_price">
+                         <button type="submit" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal" > Search </button>
+                     </div>
+                 </form>
+
+            </div>
+        </form>
 </div>
 
 <div class = "container" style="margin-left:290px; height: 300px; overflow-y: auto">
@@ -44,6 +45,7 @@
                 <th class="table-boot1">Crop Name</th>
                 <th class="table-boot1">Seller ID</th>
                 <th class="table-boot1">Price</th>
+                <th class="table-boot1">Quantity</th>
                 <th class="table-boot1">Buy</th>
             </tr>
             </thead>
@@ -61,6 +63,9 @@
                 </td >
                 <td class="table-boot">
                     {{i.Price_1kg}}
+                </td>
+                <td class="table-boot">
+                    {{i.Quantity_Kg}}
                 </td>
                 <td class="table-boot">
                     <button type="submit" class = "btn btn-success"> Buy </button>
