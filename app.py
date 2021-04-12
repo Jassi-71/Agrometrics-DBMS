@@ -207,8 +207,10 @@ def trader_buy_crop():
             seller_crop_quantity1=cursor.fetchone()
             seller_crop_quantity=int(seller_crop_quantity1['Quantity_Kg'])
             if buyer_crop_quantity<=seller_crop_quantity:
+                flash("Successful Buy!")
                 print('YES')
             else:
+                flash("Invalid quantity of crop")
                 print('No')
             return redirect(url_for('trader_crop_price'))
     else:
