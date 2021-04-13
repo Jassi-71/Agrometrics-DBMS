@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
-from dateutil.relativedelta import *
+# from dateutil.relativedelta import *
 
 app = Flask(__name__)
 
@@ -645,7 +645,39 @@ def mandi_board_dashboard():
         for i in table2:
             i.update([("counter", count)])
             count = count+1
-        return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict)
+
+        year = ''; month = '';mtax=0;mspace=0
+        if request.method == 'POST':
+            year_month = request.form['year_month']
+            # print(year_month)
+
+            for i  in range(0, len(year_month)):
+                if(year_month[i]=='-'):
+                    year = year_month[:i]
+                    month = year_month[i+1:len(year_month)]
+            # print(year,month)
+
+            cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id and year(transaction.Date_Of_Transaction)='{year}' and month(transaction.Date_Of_Transaction)='{month}' group by Mandi_Board_Id order by Amount desc;")
+            month_tax = cursor.fetchall()
+            for i in month_tax:
+                mtax = round((i['Amount']*i['Trade_Charges'])/100,2)
+            cursor.execute(f"select storage_mandi_board_rent.Mandi_Board_Id, sum(Charges) as Charges from storage_mandi_board_rent join storage_mandi_board where storage_mandi_board.Mandi_Board_Id = '{user_id}' and year(storage_mandi_board_rent.timeFrom)='{year}' and month(storage_mandi_board_rent.timeFrom) = '{month}' and storage_mandi_board_rent.Mandi_Board_Id=storage_mandi_board.Mandi_Board_Id and storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id group by storage_mandi_board_rent.Mandi_Board_Id;")
+            month_space = cursor.fetchall()
+            for i in month_space:
+                mspace = (i['Charges'])
+            # print(mtax,mspace,'post')
+        else:
+            cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id group by Mandi_Board_Id order by Amount desc;")
+            month_tax = cursor.fetchall()
+            for i in month_tax:
+                mtax = round((i['Amount']*i['Trade_Charges'])/100,2)
+            cursor.execute(f"select storage_mandi_board_rent.Mandi_Board_Id, sum(Charges) as Charges from storage_mandi_board_rent join storage_mandi_board where storage_mandi_board.Mandi_Board_Id = '{user_id}' and storage_mandi_board_rent.Mandi_Board_Id=storage_mandi_board.Mandi_Board_Id and storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id group by storage_mandi_board_rent.Mandi_Board_Id;")
+            month_space = cursor.fetchall()
+            for i in month_space:
+                mspace = (i['Charges'])
+            # print(mtax,mspace,'get')
+
+        return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict, mtax=mtax, mspace=mspace)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))

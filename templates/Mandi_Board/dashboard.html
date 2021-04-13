@@ -16,11 +16,10 @@
 
 {% block content %}
     <div >
-        <h3 style="margin-left: 800px; margin-top: 50px; color: #4f835b">Welcome to {{ name }}</h3>
-        <h4 style="margin-left: 700px; margin-top: 50px; color: #4f835b">{{ locality }},  {{ district }},  {{ state }}</h4>
+        <h3 style="margin-left: 630px; margin-top: 50px; color: #4f835b">Welcome to {{ name }}, {{ locality }},  {{ district }},  {{ state }}</h3>
     </div>
     <div style="height: 650px; margin-top: 40px; ">
-        <div class="page-wrapper" style="width: 600px; margin-left: 320px; display: inline-block; margin-top: 50px;">
+        <div class="page-wrapper" style="width: 650px; margin-left: 300px; display: inline-block; margin-top: 50px;">
             <div class="content">
                 <div class="row">
                     <h4 class="page-title" style="color: #4f835b; margin-left: 100px">Trade Charge Profit Scoreboard</h4>
@@ -54,7 +53,7 @@
             </div>
         </div>
 
-        <div class="page-wrapper" style="width: 600px; margin-left: 50px; display: inline-block; margin-top: 30px; padding: 20px; ">
+        <div class="page-wrapper" style="width: 650px; margin-left: 50px; display: inline-block; margin-top: 30px; padding: 20px; ">
             <div class="content">
                 <div class="row">
                     <h4 class="page-title" style="color: #4f835b; margin-left: 80px">Storage House Profit Scoreboard</h4>
@@ -85,43 +84,37 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="page-wrapper" >
-            <div class="content" style="width: 1200px; margin-left: 350px; display: inline-block; margin-top: 40px; padding: 20px; ">
-                <div class="row">
-                    <h4 class="page-title" style="color: #4f835b; margin-left: 300px">Trade Profit and Storage Profit For A Specific Month</h4>
-                </div>
-                <div style="margin-top: 40px;color: #4f835b; height: 50px">
-{#                    Please Look To this Query             #}
-                    <form action="{{url_for('add_url')}}" method="post" >
-                        <label style="color: #4f835b" for="start">Select month:</label>
-                        <input style="width: 130px; color: #4f835b" type="month" id="start" name="start"
-                               min="2018-03" value="2018-05">
-                        <input  class="btn btn-success" style="float: right; padding: 5px" type="submit" value="Search">
-                    </form>
-                </div>
-                <div class="row" style="height: 500px; overflow-y: auto">
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-striped custom-table">
-                                <thead>
+    <div class="page-wrapper" >
+        <div class="content" style="width: 700px; margin-left: 600px; display: inline-block; margin-top: 40px; padding: 20px; ">
+            <div class="row">
+                <h4 class="page-title" style="color: #4f835b; ">Trade Profit and Storage Profit For A Specific Month</h4>
+            </div>
+            <div style="margin-top: 40px;color: #4f835b; height: 50px">
+                <form action="{{url_for('mandi_board_dashboard')}}" method="post" >
+                    <label style="color: #4f835b" for="start">Select month:</label>
+                    <input style="width: 130px; color: #4f835b" type="month" id="start" name="year_month"
+                           min="2018-03" value="">
+                    <input  class="btn btn-success" style="float: right; padding: 5px" type="submit" value="Search">
+                </form>
+            </div>
+            <div class="row" style="height: 500px; overflow-y: auto">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped custom-table">
+                            <thead>
+                            <tr>
+                                <th class="table-boot1">Trade Charge Profit</th>
+                                <th class="table-boot1">Storage Space Profit</th>
+                            </tr>
+                            </thead>
                                 <tr>
-                                    <th class="table-boot1">S.No</th>
-                                    <th class="table-boot1">Mandi Board Id</th>
-                                    <th class="table-boot1">Mandi Board Name</th>
-                                    <th class="table-boot1">Total Storage Profit</th>
+                                    <td class="table-boot">{{ mtax }}</td>
+                                    <td class="table-boot">{{ mspace }}</td>
+
                                 </tr>
-                                </thead>
-                                {% for row in data3 %}
-                                    <tr>
-                                        <td class="table-boot">{{ row['counter'] }}</td>
-                                        <td class="table-boot">{{ row['Mandi_Board_Id'] }}</td>
-                                        <td class="table-boot">{{ row['Name'] }}</td>
-                                        <td class="table-boot">{{ row['Charges'] }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                        </table>
                     </div>
                 </div>
             </div>
