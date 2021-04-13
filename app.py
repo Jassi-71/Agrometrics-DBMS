@@ -621,7 +621,7 @@ def FPO_dashboard():
         return redirect(url_for('check_login_info'))
 
 
-@app.route('/mandi_board__dashboard', methods=['GET', 'POST'])
+@app.route('/mandi_board_dashboard', methods=['GET', 'POST'])
 def mandi_board_dashboard():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
