@@ -17,7 +17,7 @@
             <div class = "col-md-12" >
                 <div >
                     <form method="post" class="form1">
-                         <select name="coupon_type" required>
+                         <select name="coupon_type" id = "coupon_type" required>
                             <option value="All">All Coupon </option>
                              <option value="Valid">Valid</option>
                             <option value="Invalid">Not Valid</option>
@@ -46,42 +46,47 @@
             </tr>
             </thead>
             <tbody>
-            {% for i in all_coupon_available%}
-            <tr>
-                <td class="table-boot">
-                    {{i.Transaction_Id}}
-                </td>
-                <td class="table-boot">
-                    {{i.Crop_Name}}
-                </td>
-                <td class="table-boot">
-                    {{i.Value}}
-                </td >
-                <td class="table-boot">
-                    {{i.Valid_Till}}
-                </td>
-                <td class="table-boot">
-                    <button type="submit" class = "btn btn-success"> Avail </button>
-                </td>
-            </tr>
-            {% endfor %}
 
-            {% for i in all_non_coupon_available%}
-            <tr>
-                <td class="table-boot">
-                    {{i.Transaction_Id}}
-                </td>
-                <td class="table-boot">
-                    {{i.Crop_Name}}
-                </td>
-                <td class="table-boot">
-                    {{i.Value}}
-                </td >
-                <td class="table-boot">
-                    {{i.Valid_Till}}
-                </td>
-            </tr>
-            {% endfor %}
+            {% if all_coupon_available is not none %}
+                {% for i in all_coupon_available%}
+                <tr>
+                    <td class="table-boot">
+                        {{i.Transaction_Id}}
+                    </td>
+                    <td class="table-boot">
+                        {{i.Crop_Name}}
+                    </td>
+                    <td class="table-boot">
+                        {{i.Value}}
+                    </td >
+                    <td class="table-boot">
+                        {{i.Valid_Till}}
+                    </td>
+                    <td class="table-boot">
+                        <button type="submit" class = "btn btn-success"> Avail </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+
+            {% if all_non_coupon_available is not none %}
+                {% for i in all_non_coupon_available %}
+                <tr>
+                    <td class="table-boot">
+                        {{i.Transaction_Id}}
+                    </td>
+                    <td class="table-boot">
+                        {{i.Crop_Name}}
+                    </td>
+                    <td class="table-boot">
+                        {{i.Value}}
+                    </td >
+                    <td class="table-boot">
+                        {{i.Valid_Till}}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
 
             </tbody>
         </table>

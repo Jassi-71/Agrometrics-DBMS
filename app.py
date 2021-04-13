@@ -310,14 +310,58 @@ def trader_crop_price():
 @app.route('/trader_coupon', methods=['GET','POST'])
 def trader_coupon():
     if not session.get('Username') is None:
-        cursor=mysql.connection.cursor()
         user_id = session.get('User_Id')
-        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
-                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>='{current_date}';")
-        all_coupon_available=cursor.fetchall()
-        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
-                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<'{current_date}';")
-        all_non_coupon_available=cursor.fetchall()
+        # coupon_type = None
+        all_coupon_available = None
+        all_non_coupon_available = None
+
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+            all_coupon_available=cur.fetchall()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+            all_non_coupon_available=cur.fetchall()
+            # columns = [h[0] for h in cur.description]
+
+            cur.close()
+
+        if request.method == 'POST':
+            cur = mysql.connection.cursor()
+            all_coupon_available = None
+            all_non_coupon_available = None
+            coupon_type = request.form.get('coupon_type')
+            if (coupon_type == 'Valid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                    FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                print("hello")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            elif (coupon_type == 'Invalid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                print("elif")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            else:
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available = cur.fetchall()
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available = cur.fetchall()
+                cur.close()
+
+
+            print(all_coupon_available)
+            print(all_non_coupon_available)
         return render_template('/Trader/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
     else:
         print("No username found in session")
@@ -342,21 +386,22 @@ def mandi_board_transactions():
         if request.method == 'GET':
             cur = mysql.connection.cursor()
             cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
-                join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id;")
+                join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                where transaction.Mandi_Board_Id = '{UUser_Id}';")
+
             result = cur.fetchall()
             columns = [h[0] for h in cur.description]
-
             cur.close()
 
         if request.method == 'POST':
             sseller_Id = request.form.get('seller_Id')
-            bbuyer_Id = request.form.get('bbuyer_Id')
+            bbuyer_Id = request.form.get('buyer_Id')
             cur = mysql.connection.cursor()
             if sseller_Id == 'All Sellers':
                 if bbuyer_Id == 'All Buyers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
-                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                    where transaction.Mandi_Board_Id = '{UUser_Id}';")
                 else:
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
@@ -366,7 +411,7 @@ def mandi_board_transactions():
                 if sseller_Id == 'All Sellers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
-                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                    where transaction.Mandi_Board_Id = '{UUser_Id}';")
                 else:
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
@@ -382,7 +427,7 @@ def mandi_board_transactions():
             cur.close()
 
         return render_template('/Mandi_Board/transactions.html', title='My Transactions', table=result, columns=columns,
-                               farmers=farmers, traders=traders, seller_Id=sseller_Id, bbuyer_Id=bbuyer_Id)
+                               farmers=farmers, traders=traders, seller_Id=sseller_Id, buyer_Id=bbuyer_Id)
 
     else:
         print("No username found in session")
@@ -536,7 +581,7 @@ def FPO_dashboard():
         return redirect(url_for('check_login_info'))
 
 
-@app.route('/mandi_board__dashboard', methods=['GET', 'POST'])
+@app.route('/mandi_board_dashboard', methods=['GET', 'POST'])
 def mandi_board_dashboard():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
