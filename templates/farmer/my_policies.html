@@ -1,0 +1,53 @@
+{% extends "/farmer/base.html" %}
+
+{% block more_css %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+<div style="height: 650px; margin-top: 40px; ">
+    <div class="page-wrapper" style="width: 1300px; margin-left: 320px; display: inline-block; margin-top: 50px;">
+        <div class="content">
+            <div class="row">
+                <h4 class="page-title" style="color: #4f835b">My Policies</h4>
+            </div>
+            <div class="row" style="height: 500px; overflow-y: auto">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped custom-table">
+                            <thead>
+                            <tr>
+                                <th class="table-boot1">Policy Id</th>
+                                <th class="table-boot1">Name</th>
+                                <th class="table-boot1">Detail</th>
+                                <th class="table-boot1">Date Of Registration</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in data %}
+                                <tr>
+                                    <td class="table-boot">{{ row['Policy_Id'] }}</td>
+                                    <td class="table-boot">{{ row['Name'] }}</td>
+                                    <td class="table-boot">{{ row['Details'] }}</td>
+                                    <td class="table-boot">{{ row['Date_Registeration'] }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
