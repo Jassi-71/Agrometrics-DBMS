@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
-from dateutil.relativedelta import *
+# from dateutil.relativedelta import *
 
 app = Flask(__name__)
 
@@ -390,14 +390,58 @@ def trader_crop_price():
 @app.route('/trader_coupon', methods=['GET','POST'])
 def trader_coupon():
     if not session.get('Username') is None:
-        cursor=mysql.connection.cursor()
         user_id = session.get('User_Id')
-        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
-                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>='{current_date}';")
-        all_coupon_available=cursor.fetchall()
-        cursor.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
-                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<'{current_date}';")
-        all_non_coupon_available=cursor.fetchall()
+        # coupon_type = None
+        all_coupon_available = None
+        all_non_coupon_available = None
+
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+            all_coupon_available=cur.fetchall()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+            all_non_coupon_available=cur.fetchall()
+            # columns = [h[0] for h in cur.description]
+
+            cur.close()
+
+        if request.method == 'POST':
+            cur = mysql.connection.cursor()
+            all_coupon_available = None
+            all_non_coupon_available = None
+            coupon_type = request.form.get('coupon_type')
+            if (coupon_type == 'Valid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                    FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                print("hello")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            elif (coupon_type == 'Invalid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                print("elif")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            else:
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available = cur.fetchall()
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
+                        FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available = cur.fetchall()
+                cur.close()
+
+
+            print(all_coupon_available)
+            print(all_non_coupon_available)
         return render_template('/Trader/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
     else:
         print("No username found in session")
@@ -422,21 +466,22 @@ def mandi_board_transactions():
         if request.method == 'GET':
             cur = mysql.connection.cursor()
             cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
-                join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id;")
+                join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
+                where transaction.Mandi_Board_Id = '{UUser_Id}';")
+
             result = cur.fetchall()
             columns = [h[0] for h in cur.description]
-
             cur.close()
 
         if request.method == 'POST':
             sseller_Id = request.form.get('seller_Id')
-            bbuyer_Id = request.form.get('bbuyer_Id')
+            bbuyer_Id = request.form.get('buyer_Id')
             cur = mysql.connection.cursor()
             if sseller_Id == 'All Sellers':
                 if bbuyer_Id == 'All Buyers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
-                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                    where transaction.Mandi_Board_Id = '{UUser_Id}';")
                 else:
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
@@ -446,7 +491,7 @@ def mandi_board_transactions():
                 if sseller_Id == 'All Sellers':
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
-                    where transaction.Mandi_Board_Id = {UUser_Id};")
+                    where transaction.Mandi_Board_Id = '{UUser_Id}';")
                 else:
                     cur.execute(f"Select Transaction_Id, Crop_Id, buyer_Id, seller_Id, Mandi_Board_Id, Amount from dbms_project.transaction\
                     join dbms_project.trader join dbms_project.farmers on trader.User_Id = transaction.buyer_Id and farmers.User_Id_Linked = transaction.seller_Id\
@@ -462,7 +507,7 @@ def mandi_board_transactions():
             cur.close()
 
         return render_template('/Mandi_Board/transactions.html', title='My Transactions', table=result, columns=columns,
-                               farmers=farmers, traders=traders, seller_Id=sseller_Id, bbuyer_Id=bbuyer_Id)
+                               farmers=farmers, traders=traders, seller_Id=sseller_Id, buyer_Id=bbuyer_Id)
 
     else:
         print("No username found in session")
@@ -630,7 +675,7 @@ def FPO_dashboard():
         return redirect(url_for('check_login_info'))
 
 
-@app.route('/mandi_board__dashboard', methods=['GET', 'POST'])
+@app.route('/mandi_board_dashboard', methods=['GET', 'POST'])
 def mandi_board_dashboard():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
@@ -654,7 +699,39 @@ def mandi_board_dashboard():
         for i in table2:
             i.update([("counter", count)])
             count = count+1
-        return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict)
+
+        year = ''; month = '';mtax=0;mspace=0
+        if request.method == 'POST':
+            year_month = request.form['year_month']
+            # print(year_month)
+
+            for i  in range(0, len(year_month)):
+                if(year_month[i]=='-'):
+                    year = year_month[:i]
+                    month = year_month[i+1:len(year_month)]
+            # print(year,month)
+
+            cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id and year(transaction.Date_Of_Transaction)='{year}' and month(transaction.Date_Of_Transaction)='{month}' group by Mandi_Board_Id order by Amount desc;")
+            month_tax = cursor.fetchall()
+            for i in month_tax:
+                mtax = round((i['Amount']*i['Trade_Charges'])/100,2)
+            cursor.execute(f"select storage_mandi_board_rent.Mandi_Board_Id, sum(Charges) as Charges from storage_mandi_board_rent join storage_mandi_board where storage_mandi_board.Mandi_Board_Id = '{user_id}' and year(storage_mandi_board_rent.timeFrom)='{year}' and month(storage_mandi_board_rent.timeFrom) = '{month}' and storage_mandi_board_rent.Mandi_Board_Id=storage_mandi_board.Mandi_Board_Id and storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id group by storage_mandi_board_rent.Mandi_Board_Id;")
+            month_space = cursor.fetchall()
+            for i in month_space:
+                mspace = (i['Charges'])
+            # print(mtax,mspace,'post')
+        else:
+            cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id group by Mandi_Board_Id order by Amount desc;")
+            month_tax = cursor.fetchall()
+            for i in month_tax:
+                mtax = round((i['Amount']*i['Trade_Charges'])/100,2)
+            cursor.execute(f"select storage_mandi_board_rent.Mandi_Board_Id, sum(Charges) as Charges from storage_mandi_board_rent join storage_mandi_board where storage_mandi_board.Mandi_Board_Id = '{user_id}' and storage_mandi_board_rent.Mandi_Board_Id=storage_mandi_board.Mandi_Board_Id and storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id group by storage_mandi_board_rent.Mandi_Board_Id;")
+            month_space = cursor.fetchall()
+            for i in month_space:
+                mspace = (i['Charges'])
+            # print(mtax,mspace,'get')
+
+        return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict, mtax=mtax, mspace=mspace)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
