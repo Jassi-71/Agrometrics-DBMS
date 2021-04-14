@@ -96,6 +96,78 @@ def farmer_delete(id_data):
     mysql.connection.commit()
     return redirect(url_for('farmer_crops'))
 
+@app.route('/trader_coupon_delete/<string:id_data>', methods=['POST', 'GET'])
+def trader_coupon_delete(id_data):
+    mysql.connection.cursor().execute(f"Delete From coupon WHERE Coupon_Id='{id_data}'")
+    mysql.connection.commit()
+    return redirect(url_for('trader_coupon'))
+
+@app.route('/farmer_coupon_delete/<string:id_data>', methods=['POST', 'GET'])
+def farmer_coupon_delete(id_data):
+    mysql.connection.cursor().execute(f"Delete From coupon WHERE Coupon_Id='{id_data}'")
+    mysql.connection.commit()
+    return redirect(url_for('farmer_coupon'))
+
+@app.route('/farmer_coupon', methods=['GET','POST'])
+def farmer_coupon():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        # coupon_type = None
+        all_coupon_available = None
+        all_non_coupon_available = None
+
+        if request.method == 'GET':
+            cur = mysql.connection.cursor()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                        FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+            all_coupon_available=cur.fetchall()
+            cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                        FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+            all_non_coupon_available=cur.fetchall()
+            # columns = [h[0] for h in cur.description]
+
+            cur.close()
+
+        if request.method == 'POST':
+            cur = mysql.connection.cursor()
+            all_coupon_available = None
+            all_non_coupon_available = None
+            coupon_type = request.form.get('coupon_type')
+            if (coupon_type == 'Valid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                    FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                print("hello")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            elif (coupon_type == 'Invalid'):
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available=cur.fetchall()
+                # columns = [h[0] for h in cur.description]
+                # print("elif")
+                # print(all_non_coupon_available)
+                cur.close()
+
+            else:
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                        FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
+                all_coupon_available = cur.fetchall()
+                cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
+                        FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
+                all_non_coupon_available = cur.fetchall()
+                cur.close()
+
+
+            print(all_coupon_available)
+            print(all_non_coupon_available)
+        return render_template('/farmer/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 
 @app.route('/farmer_transactions', methods=['GET', 'POST'])
 def farmer_transactions():
