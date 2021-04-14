@@ -1,0 +1,95 @@
+{% extends "/FPO/base.html" %}
+{% block more_css %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+<div class = "container p-5" style="margin-left:290px;">
+    <div class="well text-center" style="margin-top:15px">
+        <h2 style="color: #094f0e;">Coupon</h2>
+    </div>
+    <form method = 'POST' >
+        <div class = "container d-flex justify-content-center align-items-center">
+
+            <div class = "col-md-12" >
+                <div >
+                    <form method="post" class="form1">
+                        <select name="coupon_type" id = "coupon_type" required>
+                            <option value="All">All Coupon </option>
+                            <option value="Valid">Valid</option>
+                            <option value="Invalid">Not Valid</option>
+                        </select>
+                        <button type="submit" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal" > Search </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<div class = "container" style="margin-left:290px; height: 300px; overflow-y: auto">
+
+    <div class = "table-responsive " >
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="table-boot1">Transaction_id</th>
+                <th class="table-boot1">Crop Name</th>
+                <th class="table-boot1">Value</th>
+                <th class="table-boot1">Valid Till</th>
+                <th class="table-boot1">Avail</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% if all_coupon_available is not none %}
+            {% for i in all_coupon_available%}
+            <tr>
+                <td class="table-boot">
+                    {{i.Transaction_Id}}
+                </td>
+                <td class="table-boot">
+                    {{i.Crop_Name}}
+                </td>
+                <td class="table-boot">
+                    {{i.Value}}
+                </td >
+                <td class="table-boot">
+                    {{i.Valid_Till}}
+                </td>
+                <td class="table-boot">
+                    <a href="/FPO_coupon_delete/{{i.Coupon_Id}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm Avail')">Avail</a>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+
+            {% if all_non_coupon_available is not none %}
+            {% for i in all_non_coupon_available %}
+            <tr>
+                <td class="table-boot">
+                    {{i.Transaction_Id}}
+                </td>
+                <td class="table-boot">
+                    {{i.Crop_Name}}
+                </td>
+                <td class="table-boot">
+                    {{i.Value}}
+                </td >
+                <td class="table-boot">
+                    {{i.Valid_Till}}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
