@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
@@ -229,9 +231,9 @@ def trader_buy_crop():
                     if int(ID[2:]) > transaction_ID:
                         transaction_ID = int(ID[2:])
                 transaction_ID = 'tr' + str(transaction_ID + 1)
-                transaction_amount= seller_crop_quantity * crop_price
+                transaction_amount= buyer_crop_quantity * crop_price
                 command1=f"INSERT INTO dbms_project.transaction(Transaction_Id,Crop_Id,buyer_Id,seller_Id,Mandi_Board_Id,Amount,Quantity_Kg,Quality_10,Date_Of_Transaction) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-                value1=(transaction_ID,crop_id,buyer_Id,seller_id,mandi_board_data['User_Id'],transaction_amount,seller_crop_quantity,crop_details['Quality_10'],current_date)
+                value1=(transaction_ID,crop_id,buyer_Id,seller_id,mandi_board_data['User_Id'],transaction_amount,buyer_crop_quantity,crop_details['Quality_10'],current_date)
                 cursor.execute(command1,value1)
 
                 #updating coupon Table
@@ -263,11 +265,9 @@ def trader_buy_crop():
                 cursor.execute(f"UPDATE dbms_project.trader SET Total_Trade_Charges='{trader_total_trade_charges}' WHERE User_Id = '{buyer_Id}' ")
 
                 #updating seller trade charges and income
-                cursor.execute(f"UPDATE dbms_project.seller SET Trade_Charges = '{seller_data['Trade_Charges']+Trade_charges}' WHERE User_Id = '{seller_id}' ")
+                cursor.execute(f"UPDATE dbms_project.seller SET Trade_Charges = '{seller_data['Trade_Charges']+Trade_charges}',Income = '{seller_data['Income']+ buyer_crop_quantity*crop_price }' WHERE User_Id = '{seller_id}' ")
 
-                cursor.execute(f"UPDATE dbms_project.seller SET Income = '{seller_data['Income']+ buyer_crop_quantity*crop_price }' WHERE User_Id = '{seller_id}' ")
-
-                #mysql.connection.commit()
+                mysql.connection.commit()
                 cursor.close()
 
             else:
