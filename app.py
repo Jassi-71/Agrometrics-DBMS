@@ -797,7 +797,7 @@ def add_storage_space():
             cursor.execute(sql_for_mandiDetails)
             Mandi_Board_detail = cursor.fetchone()
 
-            Mandi_Board_id = Mandi_Board_detail['Mandi_Board_Id']
+            Mandi_Board_id = Mandi_Board_detail['User_Id']
             insert_mandiBoard_rent = f"INSERT INTO dbms_project.storage_mandi_board_rent (Storage_Id, Mandi_Board_Id, Renter_Person_Id, timeFrom, timeTo) VALUES('{Storage_Id}','{Mandi_Board_id}','{User_Id}','{current_date}','{date_to}')"
             cursor.execute(insert_mandiBoard_rent)
             mysql.connection.commit()
@@ -1125,3 +1125,6 @@ def Analyst_signUp():
 if __name__ == '__main__':
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.run(debug=True)
+
+
+#TODO: Storage.html and crop_price.html datatoggle is not working

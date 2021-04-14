@@ -94,13 +94,7 @@
                     <a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#mymodal">Add</a>
                 </td>
             </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<div id="mymodal" class="modal fade" role="dialog">
+        <div id="mymodal" class="modal fade" role="dialog">
             <div class="modal-dialog">
               <div class="modal-content">
                     <div class="modal-header">
@@ -111,12 +105,12 @@
                         <form action="{{url_for('add_storage_space')}}" method="POST">
                              <div class="form-group">
                                   <label>Storage ID:</label>
-                                  <input type="text" class="form-control" name="Storage_Id" required="1">
+                                  <input type="text" class="form-control" name="Storage_Id" value="{{val['Storage_Id']}}" required="1">
                              </div>
 
                             <div class="form-group">
                               <label>Mandi Board Name:</label>
-                              <input type="text" class="form-control" name="Mandi_Board_Name" required="1">
+                              <input type="text" class="form-control" name="Mandi_Board_Name" required="1" value="{{val['Name']}}">
                            </div>
 
                            <div class="form-group">
@@ -136,5 +130,11 @@
               </div>
            </div>
         </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
 
 {% endblock %}
