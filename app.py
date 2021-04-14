@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
@@ -265,14 +267,14 @@ def trader_buy_crop():
     if not session.get('Username') is None:
         if request.method == 'POST':
             cursor=mysql.connection.cursor()
-            buyer_Id=session.get['User_Id']
+            buyer_Id=session.get('User_Id')
             crop_name=request.form['crop_name']
             mandi_name=request.form['Name']
-            crop_price=request.form['crop_price']
+            crop_price=float(request.form['crop_price'])
             buyer_crop_quantity=int(request.form['crop_quantity'])
             seller_id=request.form['seller_id']
             cursor.execute(f"SELECT * FROM dbms_project.seller WHERE User_Id = '{seller_id}'")
-            seller_data=cursor.fetchall()
+            seller_data=cursor.fetchone()
 
             cursor.execute(f"SELECT * FROM dbms_project.mandi_board WHERE Name= '{mandi_name}'")
             mandi_board_data=cursor.fetchone()
@@ -286,11 +288,13 @@ def trader_buy_crop():
             seller_crop_quantity=int(crop_details['Quantity_Kg'])
             if buyer_crop_quantity<=seller_crop_quantity:
                 flash("Successful Buy!")
+                #updating crop seller table
                 if seller_crop_quantity-buyer_crop_quantity == 0:
                     cursor.execute(f"DELETE FROM dbms_project.crop_seller WHERE Seller_Id='{seller_id}' AND Crop_Id='{crop_id}' ")
                 else:
                     cursor.execute(f"UPDATE dbms_project.crop_seller SET Quantity_Kg ='{seller_crop_quantity-buyer_crop_quantity}' WHERE Seller_Id='{seller_id}' AND Crop_Id='{crop_id}'")
 
+                #updating Transaction Table
                 cursor.execute("SELECT Transaction_Id FROM dbms_project.transaction")
                 transaction_data=cursor.fetchall()
                 transaction_ID = -1
@@ -299,10 +303,12 @@ def trader_buy_crop():
                     if int(ID[2:]) > transaction_ID:
                         transaction_ID = int(ID[2:])
                 transaction_ID = 'tr' + str(transaction_ID + 1)
-                transaction_amount= seller_crop_quantity * crop_price
-                cursor.execute(f"INSERT INTO dbms_project.transaction(Transaction_Id,Crop_Id,buyer_Id,seller_Id,Mandi_Board_Id,Amount,Quantity_Kg,Quality_10,Date_Of_Transaction) VALUES \
-                        '{transaction_ID}','{crop_id}','{buyer_Id}','{seller_id}','{mandi_board_data['User_Id']}','{transaction_amount}','{seller_crop_quantity}','{crop_details['Quality_10']}','{current_date}'")
+                transaction_amount= buyer_crop_quantity * crop_price
+                command1=f"INSERT INTO dbms_project.transaction(Transaction_Id,Crop_Id,buyer_Id,seller_Id,Mandi_Board_Id,Amount,Quantity_Kg,Quality_10,Date_Of_Transaction) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                value1=(transaction_ID,crop_id,buyer_Id,seller_id,mandi_board_data['User_Id'],transaction_amount,buyer_crop_quantity,crop_details['Quality_10'],current_date)
+                cursor.execute(command1,value1)
 
+                #updating coupon Table
                 cursor.execute("SELECT Coupon_Id FROM dbms_project.coupon")
                 coupon_data=cursor.fetchall()
                 coupon_ID = -1
@@ -310,25 +316,28 @@ def trader_buy_crop():
                     ID = val['Coupon_Id']
                     if int(ID[2:]) > coupon_ID:
                         coupon_ID = int(ID[2:])
-                coupon_ID = 'tr' + str(coupon_ID + 1)
+                coupon_ID = 'co' + str(coupon_ID + 1)
                 coupon_value= transaction_amount * 0.01
                 Date = datetime.today()
                 coupon_valid_date = Date + relativedelta(month=+10)
                 coupon_valid_date = coupon_valid_date.strftime('%Y-%m-%d')
+                command2="INSERT INTO dbms_project.coupon(Coupon_Id,Transaction_Id,Crop_Id,Value,Valid_Till,Seller_Status,Buyer_Status) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+                value2=(coupon_ID,transaction_ID,crop_id,coupon_value,coupon_valid_date,'0','0')
+                cursor.execute(command2,value2)
 
-                cursor.execute(f"INSERT INTO dbms_project.coupon(Coupon_Id,Transaction_Id,Crop_Id,Value,Valid_Till,Seller_Status,Buyer_Status) VALUES \
-                               '{coupon_ID}','{transaction_ID}','{crop_id}','{coupon_value}','{coupon_valid_date}','{'0'}','{'0'}'")
+                #updating Mandi Board revenue
                 Trade_charges=mandi_board_data['Trade_Charges']*transaction_amount
-
                 cursor.execute(f"UPDATE dbms_project.mandi_board SET Revenue_Trading ='{mandi_board_data['Revenue_Trading']+Trade_charges}' WHERE User_Id='{mandi_board_data['User_Id']}'")
 
+                #updaing trader trade charges
                 cursor.execute(f"SELECT * FROM dbms_project.trader WHERE User_Id = '{buyer_Id}'")
-                trader_data=cursor.fetchall()
-                cursor.execute(f"UPDATE dbms_project.trader SET Total_Trade_Charges='{trader_data['Total_Trade_Charges']+Trade_charges}' WHERE User_Id = '{buyer_Id}' ")
+                trader_data=cursor.fetchone()
 
-                cursor.execute(f"UPDATE dbms_project.seller SET Total_Trade_Charges = '{seller_data['Trade_Charges']+Trade_charges}' WHERE User_Id = '{seller_id}' ")
+                trader_total_trade_charges=trader_data['Total_Trade_Charges']+Trade_charges
+                cursor.execute(f"UPDATE dbms_project.trader SET Total_Trade_Charges='{trader_total_trade_charges}' WHERE User_Id = '{buyer_Id}' ")
 
-                cursor.execute(f"UPDATE dbms_project.seller SET Income = '{seller_data['Income']+ buyer_crop_quantity*crop_price }' WHERE User_Id = '{seller_id}' ")
+                #updating seller trade charges and income
+                cursor.execute(f"UPDATE dbms_project.seller SET Trade_Charges = '{seller_data['Trade_Charges']+Trade_charges}',Income = '{seller_data['Income']+ buyer_crop_quantity*crop_price }' WHERE User_Id = '{seller_id}' ")
 
                 mysql.connection.commit()
                 cursor.close()
