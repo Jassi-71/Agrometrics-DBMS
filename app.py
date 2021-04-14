@@ -1,6 +1,7 @@
 from datetime import datetime
 
 # from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
@@ -49,17 +50,33 @@ def farmer_crops():
 @app.route('/farmer_insert', methods=['POST'])
 def farmer_insert():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
         cursor = mysql.connection.cursor()
-        crop_id = request.form['crop_id']
+        crop_name = request.form['crop_name']
+        mandi_name=request.form['mandi_name']
         quality = request.form['quality']
         quantity = request.form['quantity']
         price = request.form['price']
         user_id = session.get('User_Id')
-        cursor.execute(
-            f"INSERT INTO crop_seller (Seller_Id,Crop_Id,Quality_10 , Price_1kg,Quantity_Kg) VALUES(%s, %s, %s,%s,%s)",
-            (user_id, crop_id, quality, price, quantity))
-        mysql.connection.commit()
+        cursor.execute(f"SELECT Crop_Id from dbms_project.crops where Crop_Name='{crop_name}'")
+        crop_Id=cursor.fetchone()
+        cursor.execute(f"SELECT User_Id from dbms_project.mandi_board where Name='{mandi_name}' ")
+        mandi_Id=cursor.fetchone()
+        print(crop_Id)
+        print(mandi_Id)
+        if crop_Id is None or mandi_Id is None:
+            flash(u'Wrong Crop Name/Mandi Name, go to Mandi Board find correct crop/Mandi and try again!','danger')
+
+        else:
+            cursor.execute(f"SELECT Seller_Id,Crop_Id from dbms_project.crop_seller where Seller_Id='{user_id}' and Crop_Id='{crop_Id['Crop_Id']}'")
+            entry=cursor.fetchone()
+            if entry is None:
+                cursor.execute(f"INSERT INTO crop_seller (Seller_Id,Crop_Id,Quality_10 , Price_1kg,Quantity_Kg,Mandi_Board) VALUES(%s, %s, %s,%s,%s,%s)",
+                    (user_id, crop_Id['Crop_Id'], quality, price, quantity,mandi_Id['User_Id']))
+                flash("Data Inserted Successfully", 'success')
+                mysql.connection.commit()
+            else:
+                flash("Entry already exists!",'error')
+            cursor.close()
         return redirect(url_for('farmer_crops'))
 
 @app.route('/farmer_policy_insert', methods=['POST'])
@@ -578,6 +595,10 @@ def trader_coupon():
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
+
+@app.route('/mandi_board_crops', methods=['GET','POST'])
+def mandi_board_crops():
+    pass
 
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
 def mandi_board_transactions():

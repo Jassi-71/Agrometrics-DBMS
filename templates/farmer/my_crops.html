@@ -103,13 +103,16 @@
                     <div class="modal-body">
                         <form action="{{url_for('farmer_insert')}}" method="POST">
                             <div class="form-group">
-                                <label>Crop ID:</label>
-                                <input type="text" class="form-control" name="crop_id" required="1">
+                                <label>Crop Name:</label>
+                                <input type="text" class="form-control" name="crop_name" required="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Mandi Name: </label>
+                                <input type="text" class="form-control" name="mandi_name" required="1">
                             </div>
                             <div class="form-group">
                                 <label>Quality:</label>
                                 <input type="text" class="form-control" name="quality" required="1">
-
                             </div>
                             <div class="form-group">
                                 <label>Price:</label>
