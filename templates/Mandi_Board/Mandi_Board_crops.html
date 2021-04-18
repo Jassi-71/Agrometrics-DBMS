@@ -22,18 +22,9 @@
                     </div>
                     <div class="modal-body">
                         <form action="{{url_for('mandi_new_crop')}}" method="POST">
-                             <div class="form-group">
-                                 {% if new_crops|length > 0 %}
-                                      <select name="crop_selection" required>
-                                            <option value="New_Crop" disabled selected> New Crop</option>
-                                            {% for val in new_crops %}
-                                                <option value="crop_name">{{ val['Crop_Name'] }}</option>
-                                            {% endfor %}
-                                      </select>
-                                 {% else %}
+                             <div class="form-group" >
                                     <label>Crop Name:</label>
                                     <input type="text" class="form-control" name="crop_selection" required="1">
-                                 {% endif %}
                              </div>
 
                            <div class="form-group">
@@ -61,6 +52,7 @@
             <th>MSP</th>
             <th >Previous MSP</th>
             <th>Edit MSP</th>
+            <th>Delete Crop</th>
         </tr>
       </thead>
     </table>
@@ -74,6 +66,7 @@
             <td>{{ row['Msp'] }}</td>
             <td >{{ row['Previous_Msp'] }}</td>
             <td><a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#editMsp{{row.Crop_Name}}">Edit MSP</a></td>
+            <td><a href="/mandi_crop_delete/{{row.Crop_Id}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm Delete')" >Delete</a></td>
         </tr>
         <div id="editMsp{{row.Crop_Name}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
@@ -115,16 +108,5 @@
       </tbody>
     </table>
   </div>
-    <div class="mandi_board_storage_selection">
-        <form method="post" >
-            <select name="crop_selection" required>
-                <option value="All" selected disabled> All Crop</option>
-                {% for val in mandi_crops %}
-                    <option value="crop_name">{{ val['Crop_Name'] }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" style="margin-top:50px">Remove Crop </button>
-        </form>
-    </div>
 </section>
 {% endblock %}

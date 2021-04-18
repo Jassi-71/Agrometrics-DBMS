@@ -617,16 +617,15 @@ def edit_mandi_MSP():
         if request.method == 'POST':
             cursor=mysql.connection.cursor()
             crop_Name=request.form['crop_Name']
-            Current_MSP=float(request.form['Current_MSP'])
-            new_MSP=float(request.form['new_MSP'])
-            crop_Id=cursor.execute(f"SELECT Crop_Id from crops where Crop_Name='{crop_Name}'")
+            Current_MSP=request.form['Current_MSP']
+            new_MSP=request.form['new_MSP']
+            cursor.execute(f"SELECT Crop_Id from crops where Crop_Name='{crop_Name}'")
+            crop_Id =cursor.fetchone()
             User_Id = session.get('User_Id')
-            #TODO:table is not updating
-            cursor.execute(f"UPDATE crop_mandi_board SET Msp='{new_MSP}' , Previous_Price='{Current_MSP}' WHERE Mandi_Board_Id='{User_Id}' and Crop_Id='{crop_Id}'")
-            value=mysql.connection.commit()
-            print(value,User_Id,crop_Id,Current_MSP)
+            cursor.execute(f"UPDATE dbms_project.crop_mandi_board SET Msp='{new_MSP}' , Previous_Price='{Current_MSP}' WHERE Mandi_Board_Id='{User_Id}' and Crop_Id='{crop_Id['Crop_Id']}'")
+            mysql.connection.commit()
             cursor.close()
-        return redirect(url_for('mandi_board_crops'))
+            return redirect(url_for('mandi_board_crops'))
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
@@ -639,11 +638,44 @@ def mandi_new_crop():
             User_Id = session.get('User_Id')
             crop_name=request.form['crop_selection']
             MSP=request.form['MSP']
-            print(User_Id,crop_name,MSP)
+
+            cursor.execute(f"SELECT Crop_Id from crops where Crop_Name='{crop_name}'")
+            Crop_Id=cursor.fetchone()
+            if Crop_Id is None:
+                cursor.execute(f"SELECT Crop_Id from crops")
+                all_crop_Id=cursor.fetchall()
+                crop_Id = -1
+                for val in all_crop_Id:
+                    ID = val['Crop_Id']
+                    if int(ID[1:]) > crop_Id:
+                        crop_Id = int(ID[1:])
+                crop_Id = 'c' + str(crop_Id + 1)
+                cursor.execute(f"INSERT INTO dbms_project.crops (Crop_Id, Crop_Name) VALUES ('{crop_Id}','{crop_name}')")
+                cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{crop_Id}','{MSP}','{'0'}')")
+            else:
+                print(Crop_Id)
+                cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{Crop_Id['Crop_Id']}','{MSP}','{'0'}')")
+
+            mysql.connection.commit()
+            cursor.close()
+
             return redirect(url_for('mandi_board_crops'))
     else:
             print("No username found in session")
             return redirect(url_for('check_login_info'))
+
+@app.route('/mandi_crop_delete/<string:id_data>', methods=['POST', 'GET'])
+def mandi_crop_delete(id_data):
+    if not session.get('Username') is None:
+        print(id_data)
+        User_Id = session.get('User_Id')
+        mysql.connection.cursor().execute(f"Delete From dbms_project.crop_mandi_board WHERE Mandi_Board_Id='{User_Id}' and Crop_Id='{id_data}'")
+        mysql.connection.commit()
+        return redirect(url_for('mandi_board_crops'))
+    else:
+            print("No username found in session")
+            return redirect(url_for('check_login_info'))
+
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
 def mandi_board_transactions():
     if not session.get('Username') is None:
