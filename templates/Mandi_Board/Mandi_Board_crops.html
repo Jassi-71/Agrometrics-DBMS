@@ -1,0 +1,130 @@
+{% extends '/Mandi_Board/base.html' %}
+{% block more_css %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/farmer/storage_space.css') }}">
+{% endblock %}
+{% block content  %}
+<section>
+  <!--for demo wrap-->
+  <h3 >Crops</h3>
+    <div class="mandi_board_storage_selection">
+        <a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#addcrop">Add New Crop</a>
+    </div>
+    <div id="addcrop" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Please Insert Data</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{url_for('mandi_new_crop')}}" method="POST">
+                             <div class="form-group">
+                                 {% if new_crops|length > 0 %}
+                                      <select name="crop_selection" required>
+                                            <option value="New_Crop" disabled selected> New Crop</option>
+                                            {% for val in new_crops %}
+                                                <option value="crop_name">{{ val['Crop_Name'] }}</option>
+                                            {% endfor %}
+                                      </select>
+                                 {% else %}
+                                    <label>Crop Name:</label>
+                                    <input type="text" class="form-control" name="crop_selection" required="1">
+                                 {% endif %}
+                             </div>
+
+                           <div class="form-group">
+                              <label>MSP:</label>
+                              <input type="text" class="form-control" name="MSP" required="1">
+                           </div>
+
+                           <div class="form-group">
+                              <button class="btn btn-primary" type="submit">Insert Data</button>
+                           </div>
+
+                        </form>
+                    </div>
+                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                 </div>
+              </div>
+           </div>
+    </div>
+  <div class="tbl-header" >
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>Crop Name</th>
+            <th>MSP</th>
+            <th >Previous MSP</th>
+            <th>Edit MSP</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+        {% for row in mandi_crops%}
+        <tr>
+            <td>{{ row['Crop_Name'] }}</td>
+            <td>{{ row['Msp'] }}</td>
+            <td >{{ row['Previous_Msp'] }}</td>
+            <td><a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#editMsp{{row.Crop_Name}}">Edit MSP</a></td>
+        </tr>
+        <div id="editMsp{{row.Crop_Name}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Please Insert Data</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{url_for('edit_mandi_MSP')}}" method="POST">
+                             <div class="form-group">
+                                  <label>Crop Name:</label>
+                                  <input type="text" class="form-control" name="crop_Name" value="{{row['Crop_Name']}}" required="1">
+                             </div>
+
+                            <div class="form-group">
+                              <label>Current MSP:</label>
+                              <input type="text" class="form-control" name="Current_MSP" required="1" value="{{row['Msp']}}">
+                           </div>
+
+                           <div class="form-group">
+                              <label>New MSP:</label>
+                              <input type="text" class="form-control" name="new_MSP" required="1">
+                           </div>
+
+                           <div class="form-group">
+                              <button class="btn btn-primary" type="submit">Insert Data</button>
+                           </div>
+
+                        </form>
+                    </div>
+                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                 </div>
+              </div>
+           </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+    <div class="mandi_board_storage_selection">
+        <form method="post" >
+            <select name="crop_selection" required>
+                <option value="All" selected disabled> All Crop</option>
+                {% for val in mandi_crops %}
+                    <option value="crop_name">{{ val['Crop_Name'] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" style="margin-top:50px">Remove Crop </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,18 +1,15 @@
 from datetime import datetime
-
-# from dateutil.relativedelta import relativedelta
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
-# from dateutil.relativedelta import *
 
 app = Flask(__name__)
 
 app.secret_key = 'agroMetrics'
 app.config['MYSQL_HOST'] = 'aws-sql.cdxdm2xen7r2.ap-south-1.rds.amazonaws.com'
 app.config['MYSQL_USER'] = 'admin'
-app.config['MYSQL_PASSWORD'] = 'SVerma08554'
+app.config['MYSQL_PASSWORD'] = 'dbmsproject'
 app.config['MYSQL_DB'] = 'dbms_project'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
@@ -103,8 +100,9 @@ def update_crop_farmer():
         price = request.form['price']
         user_id =session.get('User_Id')
         print("PLS WORK")
-        cursor.execute(f"UPDATE crop_seller SET  Quality_10 ='{quality}', Price_1kg='{price}',Quantity_Kg='{quantity}' WHERE Crop_Id='{crop_id}' AND Seller_Id='u1'")
+        cursor.execute(f"UPDATE crop_seller SET  Quality_10 ='{quality}', Price_1kg='{price}',Quantity_Kg='{quantity}' WHERE Crop_Id='{crop_id}' AND Seller_Id='{user_id}'")
         mysql.connection.commit()
+        cursor.close()
         return redirect(url_for('farmer_crops'))
 
 
@@ -126,6 +124,7 @@ def farmer_coupon_delete(id_data):
     mysql.connection.cursor().execute(f"Delete From coupon WHERE Coupon_Id='{id_data}'")
     mysql.connection.commit()
     return redirect(url_for('farmer_coupon'))
+
 @app.route('/FPO_coupon_delete/<string:id_data>', methods=['POST', 'GET'])
 def FPO_coupon_delete(id_data):
     mysql.connection.cursor().execute(f"Delete From coupon WHERE Coupon_Id='{id_data}'")
@@ -157,7 +156,7 @@ def farmer_coupon():
             all_coupon_available = None
             all_non_coupon_available = None
             coupon_type = request.form.get('coupon_type')
-            if (coupon_type == 'Valid'):
+            if coupon_type == 'Valid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                     FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
                 all_coupon_available=cur.fetchall()
@@ -166,7 +165,7 @@ def farmer_coupon():
                 # print(all_non_coupon_available)
                 cur.close()
 
-            elif (coupon_type == 'Invalid'):
+            elif coupon_type == 'Invalid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                 FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
                 all_non_coupon_available=cur.fetchall()
@@ -218,7 +217,7 @@ def FPO_coupon():
             all_coupon_available = None
             all_non_coupon_available = None
             coupon_type = request.form.get('coupon_type')
-            if (coupon_type == 'Valid'):
+            if coupon_type == 'Valid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                     FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
                 all_coupon_available=cur.fetchall()
@@ -598,8 +597,53 @@ def trader_coupon():
 
 @app.route('/mandi_board_crops', methods=['GET','POST'])
 def mandi_board_crops():
-    pass
+    cursor=mysql.connection.cursor()
+    if not session.get('Username') is None:
+        User_Id=session.get('User_Id')
+        cursor.execute(f"select crops.Crop_Id,Crop_Name,Msp,Previous_Price as Previous_Msp from crop_mandi_board,crops \
+                                   where crop_mandi_board.Crop_Id=crops.Crop_Id and Mandi_Board_Id='{User_Id}'")
+        mandi_crops =cursor.fetchall()
+        cursor.execute(f"SELECT distinct(crops.Crop_Name) from crop_mandi_board join crops on crops.Crop_Id=crop_mandi_board.Crop_Id \
+            and not exists(SELECT crops.Crop_Name from crop_mandi_board join crops on crops.Crop_Id=crop_mandi_board.Crop_Id where Mandi_Board_id='{User_Id}')")
+        new_crops=cursor.fetchall() #return all the crops that mandi board can add
+        return render_template('/Mandi_Board/Mandi_Board_crops.html',mandi_crops=mandi_crops,new_crops=new_crops)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
+@app.route('/edit_mandi_MSP',methods=['GET','POST'])
+def edit_mandi_MSP():
+    if not session.get('Username') is None:
+        if request.method == 'POST':
+            cursor=mysql.connection.cursor()
+            crop_Name=request.form['crop_Name']
+            Current_MSP=float(request.form['Current_MSP'])
+            new_MSP=float(request.form['new_MSP'])
+            crop_Id=cursor.execute(f"SELECT Crop_Id from crops where Crop_Name='{crop_Name}'")
+            User_Id = session.get('User_Id')
+            #TODO:table is not updating
+            cursor.execute(f"UPDATE crop_mandi_board SET Msp='{new_MSP}' , Previous_Price='{Current_MSP}' WHERE Mandi_Board_Id='{User_Id}' and Crop_Id='{crop_Id}'")
+            value=mysql.connection.commit()
+            print(value,User_Id,crop_Id,Current_MSP)
+            cursor.close()
+        return redirect(url_for('mandi_board_crops'))
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+@app.route('/mandi_new_crop',methods=['GET','POST'])
+def mandi_new_crop():
+    if not session.get('Username') is None:
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            User_Id = session.get('User_Id')
+            crop_name=request.form['crop_selection']
+            MSP=request.form['MSP']
+            print(User_Id,crop_name,MSP)
+            return redirect(url_for('mandi_board_crops'))
+    else:
+            print("No username found in session")
+            return redirect(url_for('check_login_info'))
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
 def mandi_board_transactions():
     if not session.get('Username') is None:
@@ -1234,11 +1278,11 @@ def Mandi_Board_signUp():
         State = request.form.get('State')
         District = request.form.get('inputDistrict')
         Zip = request.form.get('inputZip')
-        cursor.execute("SELECT Mandi_Board_Id FROM dbms_project.mandi_board")
+        cursor.execute("SELECT User_Id FROM dbms_project.mandi_board")
         mandi_board_data = cursor.fetchall()
         Mandi_board_ID = -1
         for val in mandi_board_data:
-            ID = val['Mandi_Board_Id']
+            ID = val['User_Id']
             if int(ID[2:]) > Mandi_board_ID:
                 Mandi_board_ID = int(ID[2:])
         Mandi_board_ID = 'mb' + str(Mandi_board_ID + 1)

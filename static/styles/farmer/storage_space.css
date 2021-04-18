@@ -1,11 +1,11 @@
 
 h3{
   font-size: 30px;
-  color: linear-gradient(to right, #2a7c5a, #1ccf85);;
   text-transform: uppercase;
+  color: #4f835b;!important
   font-weight: 300;
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 table{
   width:100%;
@@ -15,7 +15,7 @@ table{
   border: 1px solid rgb(129, 219, 129);
  }
 .tbl-content{
-  height:200px;
+  height:250px;
   overflow-x:auto;
   margin-top: 0px;
   border: 1px linear-gradient(to right, #2a7c5a, #1ccf85);
@@ -78,11 +78,11 @@ section{
 	padding: 1rem;
 	cursor: pointer;
 	border-radius: 5px;
-	background-color: #32966c;
+	background-color: #31ca8a;
 	list-style: none;
 	color:linear-gradient(to right, #2a7c5a, #1ccf85);
 	align:center;
-	width:30%;
+	width:28%;
     max-height:200px;
     overflow-y:cursor;
 
@@ -91,14 +91,14 @@ section{
 {
     margin-left:50px;
 }
-.mandi_board_storage_selection form button
+.mandi_board_storage_selection form button,button
 {
     padding: 1rem;
 	border-radius: 5px;
 	background-color: #36ad7c;
 	color:linear-gradient(to right, #2a7c5a, #1ccf85);
 	align:center;
-	width:15%;
+	width:12%;
     max-height:150px;
     margin-left:70px;
 }

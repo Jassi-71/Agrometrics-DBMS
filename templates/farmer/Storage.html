@@ -91,10 +91,10 @@
                 <td>{{ val['Charges'] }}</td>
                 <td>{{ val['Space'] }}</td>
                 <td>
-                    <a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#mymodal">Add</a>
+                    <a href="" class="btn btn-success btn-xs" data-toggle="modal" data-target="#mymodal{{val.Storage_Id}}">Add</a>
                 </td>
             </tr>
-        <div id="mymodal" class="modal fade" role="dialog">
+        <div id="mymodal{{val.Storage_Id}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
               <div class="modal-content">
                     <div class="modal-header">
