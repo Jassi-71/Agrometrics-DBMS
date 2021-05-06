@@ -653,9 +653,14 @@ def mandi_new_crop():
                 cursor.execute(f"INSERT INTO dbms_project.crops (Crop_Id, Crop_Name) VALUES ('{crop_Id}','{crop_name}')")
                 cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{crop_Id}','{MSP}','{'0'}')")
             else:
-                print(Crop_Id)
-                cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{Crop_Id['Crop_Id']}','{MSP}','{'0'}')")
-
+                cursor.execute(f"SELECT Crop_Id from dbms_project.crop_mandi_board where Crop_Id='{Crop_Id['Crop_Id']}' AND Mandi_Board_Id='{User_Id}'")
+                Mandi_crop_Id=cursor.fetchone()
+                if Mandi_crop_Id is None:
+                    crop_Id=Crop_Id['Crop_Id']
+                    cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{crop_Id}','{MSP}','{'0'}')")
+                else:
+                    print(Crop_Id)
+                    flash("Crop already exists!")
             mysql.connection.commit()
             cursor.close()
 
