@@ -681,6 +681,97 @@ def mandi_crop_delete(id_data):
             print("No username found in session")
             return redirect(url_for('check_login_info'))
 
+@app.route('/mandi_board_storage_space',methods=['POST','GET'])
+def mandi_board_storage_space():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        User_Id = session.get('User_Id')
+        cursor.execute(f"SELECT count(*) as Total FROM dbms_project.storage_mandi_board where Mandi_Board_Id='{User_Id}'")
+        total_storage_space=cursor.fetchone()
+
+        cursor.execute(f"SELECT Storage_Id, Space, Charges FROM dbms_project.storage_mandi_board WHERE Mandi_Board_Id='{User_Id}'")
+        all_storage_space=cursor.fetchall()
+
+        cursor.execute(f"SELECT Storage_Id,Name,timeTo FROM dbms_project.storage_mandi_board_rent \
+                INNER JOIN seller on storage_mandi_board_rent.Renter_Person_Id = seller.User_Id where Mandi_Board_Id='{User_Id}' AND timeTo> '{current_date}'")
+        booked_space=cursor.fetchall()
+
+        cursor.execute(f"SELECT Storage_Id,Space From storage_mandi_board where Mandi_Board_Id='{User_Id}' and not exists(SELECT Mandi_Board_ID,Storage_Id  \
+                FROM storage_mandi_board_rent WHERE timeTo>curdate() and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id   \
+                AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id) ")
+        available_space=cursor.fetchall()
+
+        return render_template('/Mandi_Board/mandi_board_storage.html',total_storage_space=total_storage_space['Total'],all_storage_space=all_storage_space,booked_space=booked_space,available_space=available_space)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+@app.route('/mandi_add_storage_space', methods=['GET','POST'])
+def mandi_add_storage_space():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        User_Id = session.get('User_Id')
+        cursor.execute(f"SELECT Storage_Id FROM dbms_project.storage_mandi_board WHERE Mandi_Board_Id='{User_Id}'")
+        all_storage=cursor.fetchall()
+        new_storage_ad=-1
+        for val in all_storage:
+            ID = val['Storage_Id']
+            if int(ID[1:]) > new_storage_ad:
+                new_storage_ad = int(ID[1:])
+        new_storage_ad = 's' + str(new_storage_ad + 1)
+        space=request.form['space_area']
+        charges=request.form['storage_charges']
+        cursor.execute(f"INSERT INTO dbms_project.storage_mandi_board (Storage_Id, Mandi_Board_Id, Space, Charges) VALUES ('{new_storage_ad}','{User_Id}','{space}','{charges}')")
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('mandi_board_storage_space'))
+
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+@app.route('/mandi_add_storage_edit',methods=['GET','POST'])
+def mandi_add_storage_edit():
+    if not session.get('Username') is None:
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            User_Id = session.get('User_Id')
+            storage_Id=request.form['Storage_Id']
+            area=request.form['space_area']
+            charges=request.form['storage_charges']
+
+            cursor.execute(f"SELECT Storage_Id FROM dbms_project.storage_mandi_board_rent WHERE timeTo> '{current_date}' AND Mandi_Board_Id='{User_Id}' AND Storage_Id='{storage_Id}'")
+            booked_space = cursor.fetchone()
+            if booked_space is None:
+                cursor.execute(f"UPDATE dbms_project.storage_mandi_board SET Space='{area}',Charges='{charges}' WHERE Mandi_Board_Id='{User_Id}' AND Storage_Id='{storage_Id}'")
+                mysql.connection.commit()
+                cursor.close()
+            else:
+                flash("Cannot modify details as this storage space is allocated! ")
+            return redirect(url_for('mandi_board_storage_space'))
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+@app.route('/Mandi_delete_storage/<string:id_data>', methods=['GET','POST'])
+def Mandi_delete_storage(id_data):
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        User_Id = session.get('User_Id')
+        cursor.execute(f"SELECT Storage_Id FROM dbms_project.storage_mandi_board_rent WHERE Mandi_Board_Id='{User_Id}' AND Storage_Id='{id_data}' AND timeTo> '{current_date}'")
+        booked_space = cursor.fetchone()
+
+        print(id_data)
+        if booked_space is None:
+            mysql.connection.cursor().execute(f"Delete From dbms_project.storage_mandi_board WHERE Mandi_Board_Id='{User_Id}' AND Storage_Id='{id_data}'")
+            mysql.connection.commit()
+        else:
+            flash("Cannot delete this storage space as this is allocated! ")
+        return redirect(url_for('mandi_board_storage_space'))
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/mandi_board_transactions', methods=['GET', 'POST'])  # mandiboard transactions
 def mandi_board_transactions():
     if not session.get('Username') is None:
@@ -989,7 +1080,7 @@ def farmer_storage():
         all_mandi_board_storage = None
 
         if request.method == 'GET':
-            cursor = mysql.connection.cursor()  # TODO:write right query
+            cursor = mysql.connection.cursor()
             available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where not exists(\
                     SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
                     WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id)"
@@ -1279,7 +1370,6 @@ def Seller_signUp(seller_type):
                     farmer_ID = int(ID[1:])
             farmer_ID = 'f' + str(farmer_ID + 1)
             new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id, Trade_Charges) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}','{0}')"
-            # TODO: here assigning fp1 to each farmer,farmer can change it after farmer login
             cursor.execute(new_farmer_sql)
 
         print("USER_ID: " + str(User_Id))
