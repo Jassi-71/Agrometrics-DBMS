@@ -2,3 +2,28 @@
 
 {% block more_css %}
 {% endblock %}
+
+{% block content %}
+    <div style="margin-left: 370px; margin-top: 40px; color: #4f835b">
+        <h2>Hello, {{ name }}</h2>
+    </div>
+    <div style="padding: 40px; padding-top: 60px">
+        <div style="margin-left: 330px;padding: 20px; background-color: #d8ffde; height: 100px; width: 500px; text-align: center">
+            <h5 style="display: inline-block">Total Number of Farmers  :  </h5>
+            <h6 style="display: inline-block;margin-left: 100px">{{ tf }}</h6>
+
+        </div>
+        <div style="margin-left: 330px;margin-top: 30px;padding: 20px; background-color: #d8ffde; height: 100px; width: 500px; text-align: center">
+            <h5 style="display: inline-block">Total Number of Traders  :  </h5>
+            <h6 style="display: inline-block; margin-left: 100px">{{ tt }}</h6>
+        </div>
+        <div style="margin-left: 330px;margin-top: 30px;padding: 20px; background-color: #d8ffde; height: 100px; width: 500px; text-align: center">
+            <h5 style="display: inline-block">Total Number of FPO  :  </h5>
+            <h6 style="display: inline-block ;margin-left: 100px">{{ tfpo }}</h6>
+        </div>
+        <div style="margin-left: 330px;margin-top: 30px;padding: 20px; display: inline-block;background-color: #d8ffde; height: 100px; width: 500px; text-align: center">
+            <h5 style="display: inline-block">Total Number of Mandi Board  :  </h5>
+            <h6 style="display: inline-block; margin-left: 80px">  {{ tmb }}</h6>
+        </div>
+    </div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+# from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, Markup, url_for, session,flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import redirect
@@ -980,11 +980,58 @@ def farmer_my_policies():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/analyst_agriculture_analysis', methods=['GET', 'POST'])
+def analyst_agriculture_analysis():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        cur = mysql.connection.cursor()
+        cur.execute(
+            f"select * from analyst where User_Id='{user_id}'")
+        Name = cur.fetchall();
+        name = 0
+        for i in Name:
+            name = i['Analyst_Name']
+        return render_template('/Analyst/dashboard.html', name=name)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/analyst_dashboard', methods=['GET', 'POST'])
 def analyst_dashboard():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
-        return render_template('/Analyst/dashboard.html')
+        cur = mysql.connection.cursor()
+        cur.execute(
+            f"select * from analyst where User_Id='{user_id}';")
+        Name = cur.fetchall();
+        name = 0
+        for i in Name:
+            name = i['Analyst_Name']
+        cur.execute(
+                f"select count(*) as count from FarmerList;")
+        TF = cur.fetchall();
+        tf = 0
+        for i in TF:
+            tf = i['count']
+        cur.execute(
+            f"select count(*) as count from trader;")
+        TT = cur.fetchall();
+        tt = 0
+        for i in TT:
+            tt = i['count']
+        cur.execute(
+            f"select count(*) as count from FPOList;")
+        TFPO = cur.fetchall();
+        tfpo = 0
+        for i in TFPO:
+            tfpo = i['count']
+        cur.execute(
+            f"select count(*) as count from mandi_board;")
+        TMB = cur.fetchall();
+        tmb = 0
+        for i in TMB:
+            tmb = i['count']
+        return render_template('/Analyst/dashboard.html', name=name, tt=tt, tf=tf, tfpo=tfpo, tmb=tmb)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
@@ -1242,7 +1289,7 @@ def check_login_info():
                 return create_session(account)
             else:
                 return render_template('Login.html')
-        elif user_profession == 'FPO' :
+        elif user_profession == 'FPO':
             cursor = mysql.connection.cursor()
             cursor.execute(f"SELECT * FROM seller WHERE Login = '{Username}' AND Password = '{password}' AND Designation = '{'FP'}'")
 
