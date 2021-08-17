@@ -28,6 +28,20 @@ def start():
 def base():
     return render_template('farmer/base.html')
 
+@app.route('/farmer_info',methods=['GET', 'POST'])
+def farmer_info():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT User_Id,Login,Password,Email,Name,Locality,District,State,Bank_Account_No,Land_Area FROM seller join farmers on seller.User_Id=farmers.User_Id_Linked WHERE User_Id='{user_id}'"
+        )
+        farmer_information=cursor.fetchall()
+
+        return render_template("/farmer/farmer_about.html",data=farmer_information)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 @app.route('/farmer_crops', methods=['GET', 'POST'])
 def farmer_crops():
@@ -94,16 +108,38 @@ def update_crop_farmer():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
         crop_id = request.form['crop_id']
-        print(crop_id)
+
         quality = request.form['quality']
         quantity = request.form['quantity']
         price = request.form['price']
         user_id =session.get('User_Id')
-        print("PLS WORK")
+
         cursor.execute(f"UPDATE crop_seller SET  Quality_10 ='{quality}', Price_1kg='{price}',Quantity_Kg='{quantity}' WHERE Crop_Id='{crop_id}' AND Seller_Id='{user_id}'")
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_crops'))
+
+@app.route('/Edit_farmer_info',methods=['POST', 'GET'])
+def Edit_farmer_info():
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        Login=request.form['login']
+        Email=request.form['email']
+        Password=request.form['password']
+        Locality=request.form['locality']
+        District=request.form['district']
+        State=request.form['state']
+        Bank=request.form['bank_account']
+        Land=request.form['land_area']
+        # print(Login,Email,Password,Locality,District,State,Bank,Land)
+        cursor.execute(
+            f"UPDATE seller SET  Login ='{Login}', Email='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Bank_Account_No='{Bank}' WHERE User_Id='{user_id}'")
+        mysql.connection.commit()
+        cursor.execute(f"UPDATE farmers SET Land_Area='{Land}' WHERE User_Id_Linked='{user_id}'")
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('farmer_info'))
 
 
 @app.route('/farmer_delete/<string:id_data>', methods=['POST', 'GET'])
