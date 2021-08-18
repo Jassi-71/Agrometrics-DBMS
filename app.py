@@ -100,6 +100,20 @@ def farmer_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/FPO_my_crops', methods=['GET', 'POST'])
+def FPO_my_crops():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT Crop_Name,crop_seller.Crop_Id,Quality_10 , Price_1kg,Quantity_Kg FROM crop_seller join crops on crop_seller.Crop_Id=crops.Crop_Id WHERE Seller_Id='{user_id}'")
+        crop_data = cursor.fetchall()
+
+        return render_template('/FPO/fpo_crops.html', data=crop_data)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/farmer_crops', methods=['GET', 'POST'])
 def farmer_crops():
     if not session.get('Username') is None:
@@ -114,6 +128,37 @@ def farmer_crops():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/fpo_insert', methods=['POST'])
+def fpo_insert():
+    if request.method == "POST":
+        cursor = mysql.connection.cursor()
+        crop_name = request.form['crop_name']
+        mandi_name=request.form['mandi_name']
+        quality = request.form['quality']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        user_id = session.get('User_Id')
+        cursor.execute(f"SELECT Crop_Id from dbms_project.crops where Crop_Name='{crop_name}'")
+        crop_Id=cursor.fetchone()
+        cursor.execute(f"SELECT User_Id from dbms_project.mandi_board where Name='{mandi_name}' ")
+        mandi_Id=cursor.fetchone()
+        print(crop_Id)
+        print(mandi_Id)
+        if crop_Id is None or mandi_Id is None:
+            flash(u'Wrong Crop Name/Mandi Name, go to Mandi Board find correct crop/Mandi and try again!','danger')
+
+        else:
+            cursor.execute(f"SELECT Seller_Id,Crop_Id from dbms_project.crop_seller where Seller_Id='{user_id}' and Crop_Id='{crop_Id['Crop_Id']}'")
+            entry=cursor.fetchone()
+            if entry is None:
+                cursor.execute(f"INSERT INTO crop_seller (Seller_Id,Crop_Id,Quality_10 , Price_1kg,Quantity_Kg,Mandi_Board) VALUES(%s, %s, %s,%s,%s,%s)",
+                    (user_id, crop_Id['Crop_Id'], quality, price, quantity,mandi_Id['User_Id']))
+                flash("Data Inserted Successfully", 'success')
+                mysql.connection.commit()
+            else:
+                flash("Entry already exists!",'error')
+            cursor.close()
+        return redirect(url_for('FPO_my_crops'))
 
 @app.route('/farmer_insert', methods=['POST'])
 def farmer_insert():
@@ -175,6 +220,22 @@ def update_crop_farmer():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_crops'))
+
+@app.route('/update_crop_fpo',methods=['POST','GET'])
+def update_crop_fpo():
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        crop_id = request.form['crop_id']
+
+        quality = request.form['quality']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        user_id =session.get('User_Id')
+
+        cursor.execute(f"UPDATE crop_seller SET  Quality_10 ='{quality}', Price_1kg='{price}',Quantity_Kg='{quantity}' WHERE Crop_Id='{crop_id}' AND Seller_Id='{user_id}'")
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('FPO_my_crops'))
 
 @app.route('/Edit_analyst_info',methods=['POST', 'GET'])
 def Edit_analyst_info():
@@ -272,6 +333,13 @@ def farmer_delete(id_data):
     mysql.connection.cursor().execute(f"Delete From crop_seller WHERE Seller_Id='{user_id}' AND Crop_Id='{id_data}'")
     mysql.connection.commit()
     return redirect(url_for('farmer_crops'))
+
+@app.route('/fpo_delete/<string:id_data>', methods=['POST', 'GET'])
+def fpo_delete(id_data):
+    user_id = session.get('User_Id')
+    mysql.connection.cursor().execute(f"Delete From crop_seller WHERE Seller_Id='{user_id}' AND Crop_Id='{id_data}'")
+    mysql.connection.commit()
+    return redirect(url_for('FPO_my_crops'))
 
 @app.route('/trader_coupon_delete/<string:id_data>', methods=['POST', 'GET'])
 def trader_coupon_delete(id_data):
