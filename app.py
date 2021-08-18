@@ -70,6 +70,21 @@ def mandi_board_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/FPO_info',methods=['GET', 'POST'])
+def FPO_info():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT User_Id,Login,Password,Email,Name,Locality,District,State,Bank_Account_No FROM seller WHERE User_Id='{user_id}'"
+        )
+        FPO_information=cursor.fetchall()
+
+        return render_template("/FPO/About.html",data=FPO_information)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/farmer_info',methods=['GET', 'POST'])
 def farmer_info():
     if not session.get('Username') is None:
@@ -232,7 +247,24 @@ def Edit_farmer_info():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_info'))
-
+@app.route('/Edit_FPO_info',methods=['POST', 'GET'])
+def Edit_FPO_info():
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        Login=request.form['login']
+        Email=request.form['email']
+        Password=request.form['password']
+        Locality=request.form['locality']
+        District=request.form['district']
+        State=request.form['state']
+        Bank=request.form['bank_account']
+        # print(Login,Email,Password,Locality,District,State,Bank,Land)
+        cursor.execute(
+            f"UPDATE seller SET  Login ='{Login}', Email='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Bank_Account_No='{Bank}' WHERE User_Id='{user_id}'")
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('FPO_info'))
 
 @app.route('/farmer_delete/<string:id_data>', methods=['POST', 'GET'])
 def farmer_delete(id_data):
