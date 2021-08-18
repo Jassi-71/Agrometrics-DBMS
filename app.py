@@ -28,6 +28,20 @@ def start():
 def base():
     return render_template('farmer/base.html')
 
+@app.route('/trader_info',methods=['GET', 'POST'])
+def trader_info():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT User_Id,Login,Password,Name,Mobile_Number,Bank_Account_Number FROM trader WHERE User_Id='{user_id}'"
+        )
+        about_trader = cursor.fetchall()
+        return render_template("/Trader/About.html", data=about_trader)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/mandi_board_info',methods=['GET', 'POST'])
 def mandi_board_info():
     if not session.get('Username') is None:
@@ -132,6 +146,20 @@ def update_crop_farmer():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_crops'))
+@app.route('/Edit_trader_info',methods=['POST', 'GET'])
+def Edit_trader_info():
+    cursor = mysql.connection.cursor()
+    user_id = session.get('User_Id')
+    Login = request.form['login']
+    Password = request.form['password']
+    phone_number = request.form['phone_number']
+    bank_account=request.form['bank_account']
+    # print(Login,Email,Password,Locality,District,State,Bank,Land)
+    cursor.execute(
+        f"UPDATE trader SET  Login ='{Login}',Password='{Password}',Mobile_Number='{phone_number}',Bank_Account_Number='{bank_account}' WHERE User_Id='{user_id}'")
+    mysql.connection.commit()
+    cursor.close()
+    return redirect(url_for('trader_info'))
 
 @app.route('/Edit_mandi_info',methods=['POST', 'GET'])
 def Edit_mandi_info():
