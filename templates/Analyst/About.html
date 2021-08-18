@@ -1,0 +1,73 @@
+{% extends "/Analyst/base.html" %}
+
+{% block more_css %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+<div style="margin-left:390px; margin-top:100px; margin-right:200px; background-color: #98e698!important; border-bottom: 2px solid green;">
+        {% for row in data %}
+
+        <div class="card-header text-center" style="border-bottom: 2px solid green;"><h3>Welcome {{ row.Analyst_Name }}</h3></div>
+              <div class="card-body text-center" style="border-bottom: 2px solid green;">
+                  <ul class="list-group list-group-flush" style="margin-left:50px; margin-right:50px;margin-bottom:20px; ">
+                    <li class="list-group-item" style="background-color: #98e698!important; border-bottom: 2px solid black;">User ID - {{row.User_Id}}</li>
+                    <li class="list-group-item" style="background-color: #98e698!important; border-bottom: 2px solid black;">Login - {{row.Login}}</li>
+                    <li class="list-group-item" style="background-color: #98e698!important; border-bottom: 2px solid black;">Password - {{row.Password}}</li>
+                    <li class="list-group-item" style="background-color: #98e698!important;">Email - {{row.email}}</li>
+                  </ul>
+
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modaledit{{row.User_Id}}" style="margin-bottom:20px">Edit Information</a>
+
+              <div class="card-footer text-center">
+                <h5>Information</h5>
+              </div>
+
+              </div>
+        <div id="modaledit{{row.User_Id}}" class="modal fade" role="dialog" >
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  <h4 class="modal-title">Update Information</h4>
+                              </div>
+                              <div class="modal-body">
+                                  <form action="{{ url_for('Edit_analyst_info')}}" method="POST">
+                                      <div class="form-group">
+                                          <label class="col-form-label">Login:</label>
+                                          <input type="text" class="form-control" name="login" value="{{row.Login}}">
+                                      </div>
+                                      <div class="form-group">
+                                          <label>Password:</label>
+                                          <input type="text" class="form-control" name="password" value="{{row.Password}}">
+                                      </div>
+                                      <div class="form-group">
+                                          <label>Email:</label>
+                                          <input type="text" class="form-control" name="email" value="{{row.email}}">
+                                      </div>
+
+                                      <div class="form-group text-center">
+                                        <button class="btn btn-primary" type="submit">Update Information</button>
+                                    </div>
+                                  </form>
+                                  <div class="modal-footer ">
+                                    <button type="button" class="btn btn-default"  data-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}
