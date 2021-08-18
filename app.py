@@ -28,6 +28,20 @@ def start():
 def base():
     return render_template('farmer/base.html')
 
+@app.route('/mandi_board_info',methods=['GET', 'POST'])
+def mandi_board_info():
+    if not session.get('Username') is None:
+        cursor = mysql.connection.cursor()
+        user_id = session.get('User_Id')
+        cursor.execute(
+            f"SELECT User_Id,Login,Password,Email_Address,Name,Locality,District,Pincode,State,Contact_No FROM mandi_board WHERE User_Id='{user_id}'"
+        )
+        mandi_info=cursor.fetchall()
+        return render_template("/Mandi_Board/mandi_board_about.html",data=mandi_info)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
 @app.route('/farmer_info',methods=['GET', 'POST'])
 def farmer_info():
     if not session.get('Username') is None:
@@ -118,6 +132,26 @@ def update_crop_farmer():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_crops'))
+
+@app.route('/Edit_mandi_info',methods=['POST', 'GET'])
+def Edit_mandi_info():
+    cursor = mysql.connection.cursor()
+    user_id = session.get('User_Id')
+    Login = request.form['login']
+    Email = request.form['email']
+    Password = request.form['password']
+    Locality = request.form['locality']
+    District = request.form['district']
+    State = request.form['state']
+    Pincode = request.form['pincode']
+    phone_number = request.form['phone_number']
+    # print(Login,Email,Password,Locality,District,State,Bank,Land)
+    cursor.execute(
+        f"UPDATE mandi_board SET  Login ='{Login}', Email_Address='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Pincode='{Pincode}',Contact_No='{phone_number}' WHERE User_Id='{user_id}'")
+    mysql.connection.commit()
+    cursor.close()
+    return redirect(url_for('mandi_board_info'))
+
 
 @app.route('/Edit_farmer_info',methods=['POST', 'GET'])
 def Edit_farmer_info():
