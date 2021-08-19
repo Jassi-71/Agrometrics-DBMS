@@ -986,12 +986,13 @@ def analyst_agriculture_analysis():
         user_id = session.get('User_Id')
         cur = mysql.connection.cursor()
         cur.execute(
-            f"select * from analyst where User_Id='{user_id}'")
-        Name = cur.fetchall();
-        name = 0
-        for i in Name:
-            name = i['Analyst_Name']
-        return render_template('/Analyst/dashboard.html', name=name)
+            f"SELECT Crop_Id, Crop_Name FROM dbms_project.CropMandi group by Crop_Name;")
+        Crops = cur.fetchall();
+        crop_name = []
+        for i in Crops:
+            crop_name.append(i['Crop_Name'])
+        print(crop_name)
+        return render_template('/Analyst/agriculture_analysis.html', name = crop_name)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
