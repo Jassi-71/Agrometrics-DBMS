@@ -1196,7 +1196,7 @@ def farmer_my_policies():
             f"select Seller_Id,seller_policy.Policy_Id,Name,Details,Date_Registeration from seller_policy join government_policy where  Seller_Id='{user_id}' and government_policy.Policy_Id=seller_policy.Policy_Id;")
         result = cur.fetchall()
 
-        return render_template('/Farmer/my_policies.html', data = result)
+        return render_template('/farmer/my_policies.html', data = result)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))

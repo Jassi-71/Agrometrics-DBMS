@@ -1,0 +1,19 @@
+{
+  "name": "agrometrics-dbms",
+  "version": "1.0.0",
+  "description": "College Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jassi-71/Agrometrics-DBMS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jassi-71/Agrometrics-DBMS/issues"
+  },
+  "homepage": "https://github.com/Jassi-71/Agrometrics-DBMS#readme"
+}
