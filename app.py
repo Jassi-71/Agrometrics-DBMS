@@ -1765,11 +1765,11 @@ def Analyst_signUp():
         Username = request.form.get('Username')
         email = request.form.get('email')
         password = request.form.get('inputPassword')
-        cursor.execute('SELECT Analyst_Id from analyst')
+        cursor.execute('SELECT User_Id from analyst')
         analyst_data = cursor.fetchall()
         analyst_ID = -1
         for val in analyst_data:
-            ID = val['Analyst_Id']
+            ID = val['User_Id']
             if int(ID[1:]) > analyst_ID:
                 analyst_ID = int(ID[1:])
         analyst_ID = 't' + str(analyst_ID + 1)
