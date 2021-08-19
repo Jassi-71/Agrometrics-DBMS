@@ -1,10 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <head>
+        <meta charset="utf-8">
+        <title>AgroMetrics</title>
+        <link rel="stylesheet" href="style_profile.css">
+        <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static',filename='styles/about.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="file:///E:/jquery.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    </head>
+    <title>About Team</title>
 </head>
 <body>
+<div class="main_content" style="padding: 50px;">
+    <div style="text-align:center; padding-bottom: 20px; margin-bottom: 60px; font-weight: 60; border-bottom: 3px solid #017700;"><h1>Meet our team!</h1></div>
+    <div style="display: inline-block; width: 500px; padding-left: 300px;">
+        <img src="{{ url_for('static',filename='styles/jasdeep.jpeg') }}" alt="jasdeep" width="300px" height="400px">
+        <h3 style="padding-top:30px; width: 300px; text-align: center;">Jasdeep Singh</h3>
+        <h4 style="width: 330px;text-align: center;">An enthusiastic member of the team. Currently in 3rd year of IIITD pursuing B.Tech in CSE. Worked on designing webpages, checked consistency in database and made complex sql queries.</h4>
+    </div>
+    <div style="display: inline-block; width: 500px; padding-left: 400px;">
+        <img src="{{ url_for('static',filename='styles/shanu.jpg') }}" alt="shanu" width="300px" height="400px">
+        <h3 style="padding-top:30px; width: 300px; text-align: center;">Shanu Verma</h3>
+        <h4 style="width: 350px;text-align: center;">The driving force of the team, who is also the member. Currently in 3rd year of IIITD pursuing B.Tech in CSE. Worked on integrating sql with website, helped in designing webpages and hosted it online on heroku.</h4>
+    </div>
 
+    <div style="height: 100px;"></div>
+
+    <div style="position:relative; display: inline-block; padding-left: 150px;">
+        <h3 style="padding-top:30px; width: 300px; text-align: center;">Manasvi Singh</h3>
+        <h4 style="width: 350px;text-align: center;">The member who also leaded on the part for better construction of database. Currently in 3rd year of IIITD pursuing B.Tech in CSAI. Worked on making report for the project, designing webpages, checking FK and PK of tables and sql queries.</h4>
+    </div>
+
+    <div style="position:relative; display: inline-block; padding-left: 150px;">
+        <h3 style="padding-top:30px; width: 300px; text-align: center;">Nikhil</h3>
+        <h4 style="width: 350px;text-align: center;">The valueable member who layed the template layout for the website. Currently in 3rd year of IIITD pursuing B.Tech in CSAM. Worked on making reports, indexing of tables in databse, designing templates for webpages and made sql queries.</h4>
+    </div>
+
+    <div style="position:relative; display: inline-block; padding-left: 150px;">
+        <h3 style="width: 300px; text-align: center;">Rahul Sethi</h3>
+        <h4 style="width: 300px;text-align: center;">The member who tried to sort problem in every domain. Currently in 3rd year of IIITD pursuing B.Tech in CSAM. Worked on Views of the table, helped in designing webpages and made complex sql queries.</h4>
+    </div>
+    <div class="info" style="height: 100px;">
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 </body>
 </html>

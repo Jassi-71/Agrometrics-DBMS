@@ -19,6 +19,7 @@
     margin-left: 10px;
     /*color: #8dc1a4;*/
     color: #094f0e;
+    border-bottom: 2px solid #017700;
 }
 
 body {
@@ -40,7 +41,7 @@ body {
 
 .wrapper #ul1 li {
     padding: 10px;
-    border-bottom: 1px solid #017700;
+    border-bottom: 2px solid #017700;
     /*border-top: 1px solid #017700;*/
 }
 
@@ -56,6 +57,7 @@ body {
 
 .wrapper #ul1 li:hover {
     background-color: #017700;
+    border-bottom: 2px solid #b0eacd;
 }
 
 

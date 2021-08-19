@@ -86,6 +86,10 @@ def FPO_info():
 
 @app.route('/about',methods=['GET', 'POST'])
 def about():
+    return render_template("/About_application.html")
+
+@app.route('/about_team',methods=['GET', 'POST'])
+def about_team():
     return render_template("/about_team.html")
 
 @app.route('/farmer_info',methods=['GET', 'POST'])

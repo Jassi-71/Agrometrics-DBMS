@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+.centerclass {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+
+.main_content{
+    background-color: #b0eacd;
+    color: #017700;
+}
+
+
+.wrapper .main_content {
+    width: 100%;
+    margin-left: 240px;
+    background: linear-gradient(to right, rgb(174, 229, 198), #9fcdbb);
+    overflow-y: auto;
+}
+
+.wrapper .main_content .header {
+    padding: 20px;
+    padding-left: 300px;
+    padding-top: 30px;
+    color: #094f0e;
+    /*border-bottom: 1px solid #017700;*/
+}
+
+.wrapper .main_content{
+    margin: 20px;
+    color: #717171;
+    line-height: 25px;
+}
+
+/* ::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+} */
