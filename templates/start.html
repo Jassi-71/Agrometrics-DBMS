@@ -10,15 +10,19 @@
        <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
        <title>AgroMetrics</title>
   </head>
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <body>
 <div class="wrapper">
     <div class="sidebar">
-        <h2>Menu</h2>
+        <h2 id="head">Menu</h2>
         <ul id="ul1">
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#"><i class="fas fa-home"></i>Home</a></li>
-            <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="/" role="button" aria-expanded="false">SignUp</a>
-            <ul class="dropdown-menu" id="ul3">
+{#            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#" style="margin-top: -25px"><i class="fas fa-home"></i>Home</a></li>#}
+            <li class="nav-item dropdown" style="margin-top: -30px">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="/" role="button" aria-expanded="false" style="font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace; font-size: 20px">SignUp</a>
+            <ul class="dropdown-menu" id="ul3" style="background: linear-gradient(to right, #2a7c5a, #1ccf85);">
                 <li ><a class="nav-link" href="/Farmer_signUp" >Farmer</a></li>
                 <li ><a class="nav-link" href="/FPO_signUp" >FPO</a></li>
                 <li ><a class="nav-link" href="/Trader_signUp">Trader</a></li>
@@ -27,7 +31,7 @@
             </ul>
 
             <li class="nav-item dropdown">
-            <a class="nav-link " href="/check_login_info" role="button" aria-expanded="false">Login</a>
+            <a class="nav-link " href="/check_login_info" role="button" aria-expanded="false" style="font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace; font-size: 20px">Login</a>
         </ul>
         <div class="social_media">
             <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -36,11 +40,16 @@
         </div>
     </div>
         <div class="main_content">
-            <div class="header">Welcome!! Have a nice day.</div>
-            <div class="info">
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit. A sed nobis ut exercitationem atque accusamus sit natus officiis totam blanditiis at eum nemo, nulla et quae eius culpa eveniet voluptatibus repellat illum tenetur, facilis porro. Quae fuga odio perferendis itaque alias sint, beatae non maiores magnam ad, veniam tenetur atque ea exercitationem earum eveniet totam ipsam magni tempora aliquid ullam possimus? Tempora nobis facere porro, praesentium magnam provident accusamus temporibus! Repellendus harum veritatis itaque molestias repudiandae ea corporis maiores non obcaecati libero, unde ipsum consequuntur aut consectetur culpa magni omnis vero odio suscipit vitae dolor quod dignissimos perferendis eos? Consequuntur!</div>
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit. A sed nobis ut exercitationem atque accusamus sit natus officiis totam blanditiis at eum nemo, nulla et quae eius culpa eveniet voluptatibus repellat illum tenetur, facilis porro. Quae fuga odio perferendis itaque alias sint, beatae non maiores magnam ad, veniam tenetur atque ea exercitationem earum eveniet totam ipsam magni tempora aliquid ullam possimus? Tempora nobis facere porro, praesentium magnam provident accusamus temporibus! Repellendus harum veritatis itaque molestias repudiandae ea corporis maiores non obcaecati libero, unde ipsum consequuntur aut consectetur culpa magni omnis vero odio suscipit vitae dolor quod dignissimos perferendis eos? Consequuntur!</div>
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit. A sed nobis ut exercitationem atque accusamus sit natus officiis totam blanditiis at eum nemo, nulla et quae eius culpa eveniet voluptatibus repellat illum tenetur, facilis porro. Quae fuga odio perferendis itaque alias sint, beatae non maiores magnam ad, veniam tenetur atque ea exercitationem earum eveniet totam ipsam magni tempora aliquid ullam possimus? Tempora nobis facere porro, praesentium magnam provident accusamus temporibus! Repellendus harum veritatis itaque molestias repudiandae ea corporis maiores non obcaecati libero, unde ipsum consequuntur aut consectetur culpa magni omnis vero odio suscipit vitae dolor quod dignissimos perferendis eos? Consequuntur!</div>
+            <div class="header"><h2>Welcome to the application ! Hoping to be of use to your needs.</h2></div>
+            <img src="https://www.mobindustry.net/wp-content/uploads/1539586765146186b72d2e9.jpg" alt="Computer Man" style=" padding: 20px; padding-left:370px; height: 500px">
+            <div class="info" style="font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace; font-size: 20px">
+                <div style="padding-top: 30px">Farmers are of prime importance to the Indian Economy. Their hard work is essential for the growth of any civilization. This leads to the main motive behind building this application, which is to enable the farmers with powerful technology to protect themselves against any fraudulent activities and enable them to sell crops at competitive prices along with a proper guidance system which can potentially help them to grow and make informative decisions. The aim is to promote uniformity in agriculture marketing by streamlining procedures across the integrated markets, detaching information asymmetry between buyers and sellers and encouraging real-time price discovery based on actual demand and supply.
+                </div>
+                <div>Together with well-designed RDBMS, a user-friendly interface, this application has the potential to assist farmers and traders. This allows the farmers who were paid less worth their crop prices to get paid above or equal to Minimum support price (MSP) regulated by the government. This also gives them the opportunity to see the list of government policies for which they are eligible. The analyst research team can analyse data about selling and buying pattern, crops growth etc. Moreover, farmers can track their growth and make informed decisions about their earnings. These all can lead to the effective growth of farmers both financially and mentally. Traders will also have a greater number of options to choose from and can buy the best quality crops at reasonable prices. The government can also ensure that prices paid to farmers are greater than MSP.</div>
+                <div>In a world where the farmer’s hard work is of such importance, there we find that they are unable to sell crops at reasonable prices or get information that would help them make smart choices. Traders also find it difficult as they also do not have many choices and cannot buy the best quality crops at reasonable prices. Moreover, the Government and Mandi House do not have data of crops bought or sold and the problems faced by farmers and traders.
+
+                    Our platform will provide them with relevant data and assistance to ensure transparency in trade.
+                </div>
           </div>
             </div>
     </div>

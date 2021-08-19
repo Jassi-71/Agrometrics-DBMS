@@ -1,7 +1,173 @@
 {% extends "/Analyst/base.html" %}
 
 {% block more_css %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/farmer/storage_space.css') }}">
 {% endblock %}
 
 {% block content %}
+    <section>
+        <h3>Search by Mandi Board/Crops</h3>
+        <div class="mandi_board_storage_selection">
+            <form method="post" class="form1">
+                <select name="mandi_board_selection" required>
+                    <option value="All"> All Mandi Board </option>
+                    {% for val in mandiID_output_data %}
+                        <option value="{{ val['User_Id'] }}">{{ val['Name'] }}</option>
+                    {% endfor %}
+                </select>
+                <select name="crop_selection" class="select2" required>
+                    <option value="All"> All Crop</option>
+                    {% for val in crop_output_data %}
+                        <option value="{{ val['Crop_Id'] }}">{{ val['Crop_Name'] }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" >Search </button>
+            </form>
+        </div>
+        <div class="tbl-header">
+            <table cellpadding="0"  cellspacing="0"  border="0">
+                <thead>
+                <tr>
+                    <th>Mandi Name</th>
+                    <th>Crops</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div class="tbl-content">
+            <table cellpadding="0" cellspacing="0" border="0">
+                <tbody>
+
+                {% for item in crops_list %}
+                    <tr>
+                        <td>{{item.Name}}</td>
+                        <td>{{item.Crop_Name}}</td>
+                        <td>{{item.Msp}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <div
+            style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 400px; margin-top: 30px; display: inline-block">
+        <h3>Monthly Income</h3>
+
+        <canvas id="chart" width="400" height="400"></canvas>
+        <script>
+            // bar chart data
+            var barData = null
+            barData = {
+                labels: [
+                    {% for item in labels %}
+                        "{{ item }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgb(61,169,60,0.5)",
+                    pointColor: "rgb(25,56,205)",
+                    data: [
+                        {% for item in values %}
+                            "{{ item }}",
+                        {% endfor %}
+                    ]
+                }
+                ]
+            };
+
+            var mychart = null
+            mychart = document.getElementById("chart").getContext("2d");
+
+            steps = 10;
+            max = {{max}}
+
+                // draw bar chart
+                new Chart(mychart).Bar(barData, {
+                        scaleOverride: true,
+                        scaleSteps: steps,
+                        scaleStepWidth: Math.ceil(max / steps),
+                        scaleStartValue: 0,
+                        scaleShowVerticalLines: true,
+                        scaleShowGridLines: true,
+                        barShowStroke: true,
+                        scrollbars: true,
+                        scrolling: scrollX,
+                        scaleShowLabels: true,
+                    }
+                );
+
+
+        </script>
+    </div>
+
+    <div
+            style="height: 500px; width: 500px; color: #4f835b;background-color: #d8ffde;  padding:40px;margin-left: 100px; margin-top: 30px; display: inline-block">
+        <h3>Amount of each crop sold</h3>
+
+        <canvas id="chart1" width="400" height="400"></canvas>
+        <script>
+            // bar chart data
+            var barData1 = null
+            barData1 = {
+                labels: [
+                    {% for item in labels1 %}
+                        "{{ item }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgb(61,169,60,0.5)",
+                    pointColor: "rgba(151,187,205,1)",
+                    data: [
+                        {% for item in values1 %}
+                            "{{ item }}",
+                        {% endfor %}
+                    ]
+                }
+                ]
+            };
+
+            var mychart1 = null
+            mychart1 = document.getElementById("chart1").getContext("2d");
+
+            steps1 = 10;
+            max1 = {{max1}}
+
+                // draw bar chart
+                new Chart(mychart1).Bar(barData1, {
+                        scaleOverride: true,
+                        scaleSteps: steps,
+                        scaleStepWidth: Math.ceil(max1 / steps1),
+                        scaleStartValue: 0,
+                        scaleShowVerticalLines: true,
+                        scaleShowGridLines: true,
+                        barShowStroke: true,
+                        scrollbars: true,
+                        scrolling: scrollX,
+                        scaleShowLabels: true,
+                    }
+                );
+
+        </script>
+    </div>
 {% endblock %}

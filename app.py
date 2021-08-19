@@ -1215,12 +1215,13 @@ def analyst_agriculture_analysis():
         user_id = session.get('User_Id')
         cur = mysql.connection.cursor()
         cur.execute(
-            f"select * from analyst where User_Id='{user_id}'")
-        Name = cur.fetchall();
-        name = 0
-        for i in Name:
-            name = i['Analyst_Name']
-        return render_template('/Analyst/dashboard.html', name=name)
+            f"SELECT Crop_Id, Crop_Name FROM dbms_project.CropMandi group by Crop_Name;")
+        Crops = cur.fetchall();
+        crop_name = []
+        for i in Crops:
+            crop_name.append(i['Crop_Name'])
+        print(crop_name)
+        return render_template('/Analyst/agriculture_analysis.html', name = crop_name)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
@@ -1817,11 +1818,11 @@ def Analyst_signUp():
         Username = request.form.get('Username')
         email = request.form.get('email')
         password = request.form.get('inputPassword')
-        cursor.execute('SELECT Analyst_Id from analyst')
+        cursor.execute('SELECT User_Id from analyst')
         analyst_data = cursor.fetchall()
         analyst_ID = -1
         for val in analyst_data:
-            ID = val['Analyst_Id']
+            ID = val['User_Id']
             if int(ID[1:]) > analyst_ID:
                 analyst_ID = int(ID[1:])
         analyst_ID = 't' + str(analyst_ID + 1)
