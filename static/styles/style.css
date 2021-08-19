@@ -61,8 +61,8 @@ body {
     /*color: #8dc1a4;*/
     color: #094f0e;
     padding-bottom: 20px;
-    font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
-    font-size: 40px;
+    /*font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;*/
+    font-weight: 900; font-size: 30px;
     border-bottom: 2px solid #017700;
 }
 
