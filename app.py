@@ -308,6 +308,7 @@ def Edit_farmer_info():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_info'))
+
 @app.route('/Edit_FPO_info',methods=['POST', 'GET'])
 def Edit_FPO_info():
     if request.method == 'POST':
@@ -1395,6 +1396,48 @@ def mandi_board_dashboard():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/fpo_storage',methods=['GET','POST'])
+def fpo_storage():
+    if not session.get('Username') is None:  # checking if session exists
+        user_id = session.get('User_Id')
+        cursor = mysql.connection.cursor()
+        fpo_storage_in_mandi=f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,Charges,timeFrom,timeTo FROM dbms_project.storage_mandi_board_rent\
+                        INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
+                        INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
+                        WHERE Renter_Person_Id='{user_id}' "
+        all_mandi_board = "SELECT User_Id,Name FROM dbms_project.mandi_board"
+        cursor.execute(fpo_storage_in_mandi)
+        fpo_storage_data = cursor.fetchall()
+        cursor.execute(all_mandi_board)
+        all_mandi_board_data = cursor.fetchall()
+        cursor.close()
+
+        all_mandi_board_storage = None
+        if request.method == 'GET':
+            cursor = mysql.connection.cursor()
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where not exists(\
+                                SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                                WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id)"
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+            # print(all_mandi_board_storage)
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            mandi_boardID_selected = request.form['mandi_board_selection']
+
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where storage_mandi_board.Mandi_Board_ID = '{mandi_boardID_selected}' AND not exists(\
+                    SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                    WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id )"
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+        return render_template('/FPO/FPO_storage.html', storage_output_data=fpo_storage_data,
+                               mandiID_output_data=all_mandi_board_data,
+                               all_mandi_board_storage_output_data=all_mandi_board_storage)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])
 def farmer_storage():
@@ -1421,7 +1464,7 @@ def farmer_storage():
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
-            print(all_mandi_board_storage)
+            # print(all_mandi_board_storage)
 
         if request.method == 'POST':
             cursor = mysql.connection.cursor()
@@ -1471,9 +1514,19 @@ def add_storage_space():
             cursor.execute(update_mandi_storage_revenue)
             mysql.connection.commit()
 
+            cursor.execute(f"SELECT Designation FROM dbms_project.seller WHERE User_Id='{User_Id}'")
+            user_profession =cursor.fetchone()
+
             cursor.close()
 
-        return redirect(url_for('farmer_storage'))
+            if user_profession=="F":
+                return redirect(url_for('farmer_storage'))
+            else:
+                return redirect(url_for('fpo_storage'))
+
+        else:
+            print("No username found in session")
+            return redirect(url_for('check_login_info'))
 
 
 @app.route('/mandi_board', methods=['GET', 'POST'])
