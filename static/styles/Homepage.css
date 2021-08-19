@@ -26,6 +26,9 @@ nav{
 
 .bottom-bar {
 	width: 100%;
+    height: 8%;
+    padding: 1%;
+    display: block;
 	background: linear-gradient(to right, #2a7c5a, #1ccf85);
 	position: fixed;
     bottom: 0;
