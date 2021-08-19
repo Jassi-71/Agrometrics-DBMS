@@ -21,7 +21,6 @@ current_date = datetime.today().strftime('%Y-%m-%d')
 def start():
     if request.method == 'GET':
         return render_template('start.html')
-    # return 'Phir kata'
 
 
 @app.route('/base')
@@ -142,8 +141,7 @@ def fpo_insert():
         crop_Id=cursor.fetchone()
         cursor.execute(f"SELECT User_Id from dbms_project.mandi_board where Name='{mandi_name}' ")
         mandi_Id=cursor.fetchone()
-        print(crop_Id)
-        print(mandi_Id)
+
         if crop_Id is None or mandi_Id is None:
             flash(u'Wrong Crop Name/Mandi Name, go to Mandi Board find correct crop/Mandi and try again!','danger')
 
@@ -174,8 +172,7 @@ def farmer_insert():
         crop_Id=cursor.fetchone()
         cursor.execute(f"SELECT User_Id from dbms_project.mandi_board where Name='{mandi_name}' ")
         mandi_Id=cursor.fetchone()
-        print(crop_Id)
-        print(mandi_Id)
+
         if crop_Id is None or mandi_Id is None:
             flash(u'Wrong Crop Name/Mandi Name, go to Mandi Board find correct crop/Mandi and try again!','danger')
 
@@ -198,7 +195,7 @@ def farmer_policy_insert():
         cursor = mysql.connection.cursor()
         policy_id = request.form['Policy_Id']
         user_id = session.get('User_Id')
-        print(policy_id,user_id)
+
         cursor.execute(
             f"INSERT INTO seller_policy (Seller_Id,Policy_Id,Date_Registeration) VALUES(%s, %s, curdate())",
             (user_id, policy_id))
@@ -260,7 +257,7 @@ def Edit_trader_info():
     Password = request.form['password']
     phone_number = request.form['phone_number']
     bank_account=request.form['bank_account']
-    # print(Login,Email,Password,Locality,District,State,Bank,Land)
+
     cursor.execute(
         f"UPDATE trader SET  Login ='{Login}',Password='{Password}',Mobile_Number='{phone_number}',Bank_Account_Number='{bank_account}' WHERE User_Id='{user_id}'")
     mysql.connection.commit()
@@ -279,7 +276,7 @@ def Edit_mandi_info():
     State = request.form['state']
     Pincode = request.form['pincode']
     phone_number = request.form['phone_number']
-    # print(Login,Email,Password,Locality,District,State,Bank,Land)
+
     cursor.execute(
         f"UPDATE mandi_board SET  Login ='{Login}', Email_Address='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Pincode='{Pincode}',Contact_No='{phone_number}' WHERE User_Id='{user_id}'")
     mysql.connection.commit()
@@ -300,7 +297,7 @@ def Edit_farmer_info():
         State=request.form['state']
         Bank=request.form['bank_account']
         Land=request.form['land_area']
-        # print(Login,Email,Password,Locality,District,State,Bank,Land)
+
         cursor.execute(
             f"UPDATE seller SET  Login ='{Login}', Email='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Bank_Account_No='{Bank}' WHERE User_Id='{user_id}'")
         mysql.connection.commit()
@@ -308,6 +305,7 @@ def Edit_farmer_info():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('farmer_info'))
+
 @app.route('/Edit_FPO_info',methods=['POST', 'GET'])
 def Edit_FPO_info():
     if request.method == 'POST':
@@ -320,7 +318,7 @@ def Edit_FPO_info():
         District=request.form['district']
         State=request.form['state']
         Bank=request.form['bank_account']
-        # print(Login,Email,Password,Locality,District,State,Bank,Land)
+
         cursor.execute(
             f"UPDATE seller SET  Login ='{Login}', Email='{Email}',Password='{Password}',Locality='{Locality}',District='{District}',State='{State}',Bank_Account_No='{Bank}' WHERE User_Id='{user_id}'")
         mysql.connection.commit()
@@ -388,18 +386,14 @@ def farmer_coupon():
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                     FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
                 all_coupon_available=cur.fetchall()
-                # columns = [h[0] for h in cur.description]
-                print("hello")
-                # print(all_non_coupon_available)
+
                 cur.close()
 
             elif coupon_type == 'Invalid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                 FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
                 all_non_coupon_available=cur.fetchall()
-                # columns = [h[0] for h in cur.description]
-                # print("elif")
-                # print(all_non_coupon_available)
+
                 cur.close()
 
             else:
@@ -412,8 +406,7 @@ def farmer_coupon():
                 cur.close()
 
 
-            print(all_coupon_available)
-            print(all_non_coupon_available)
+
         return render_template('/farmer/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
     else:
         print("No username found in session")
@@ -452,7 +445,7 @@ def FPO_coupon():
                 # columns = [h[0] for h in cur.description]
                 cur.close()
 
-            elif (coupon_type == 'Invalid'):
+            elif coupon_type == 'Invalid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Seller_Status\
                 FROM coupon, crops, transaction WHERE transaction.seller_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
                 all_non_coupon_available=cur.fetchall()
@@ -481,11 +474,11 @@ def farmer_transactions():
         cur = mysql.connection.cursor()
         cur.execute("select User_Id from dbms_project.trader")
         traders = list(cur.fetchall())
-        # print(traders)
+
         traders.insert(0, {'User_Id': 'All'})
-        # print(traders)
+
         UUser_Id = session.get('User_Id')
-        # print(UUser_Id)
+
         cur.close()
         bbuyer_Id = None
         if request.method == 'GET':
@@ -500,7 +493,7 @@ def farmer_transactions():
 
         if request.method == 'POST':
             bbuyer_Id = request.form.get('buyer_Id')
-            print(bbuyer_Id)
+
             cur = mysql.connection.cursor()
             if bbuyer_Id == 'All':
                 cur.execute(
@@ -544,7 +537,7 @@ def FPO_transactions():
 
         if request.method == 'POST':
             bbuyer_Id = request.form.get('buyer_Id')
-            print(bbuyer_Id)
+
             cur = mysql.connection.cursor()
             if bbuyer_Id == 'All Buyers':
                 cur.execute(
@@ -660,11 +653,11 @@ def trader_transactions():
         cur = mysql.connection.cursor()
         cur.execute("select User_Id_Linked from dbms_project.farmers")
         farmers = list(cur.fetchall())
-        print(farmers)
+
         farmers.insert(0, {'User_Id_Linked': 'All'})
-        print(farmers)
+
         UUser_Id = session.get('User_Id')
-        print(UUser_Id)
+
         cur.close()
         sseller_Id = None
         if request.method == 'GET':
@@ -679,7 +672,7 @@ def trader_transactions():
 
         if request.method == 'POST':
             sseller_Id = request.form.get('seller_Id')
-            # print(sseler_Id)
+
             cur = mysql.connection.cursor()
             if sseller_Id == 'All':
                 cur.execute(
@@ -788,22 +781,18 @@ def trader_coupon():
             all_coupon_available = None
             all_non_coupon_available = None
             coupon_type = request.form.get('coupon_type')
-            if (coupon_type == 'Valid'):
+            if coupon_type == 'Valid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
                     FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till>'{current_date}';")
                 all_coupon_available=cur.fetchall()
-                # columns = [h[0] for h in cur.description]
-                print("hello")
-                # print(all_non_coupon_available)
+
                 cur.close()
 
-            elif (coupon_type == 'Invalid'):
+            elif coupon_type == 'Invalid':
                 cur.execute(f"SELECT coupon.Coupon_Id, coupon.Transaction_Id, crops.Crop_Name, coupon.Value, coupon.Valid_Till, coupon.Buyer_Status\
                 FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
                 all_non_coupon_available=cur.fetchall()
-                # columns = [h[0] for h in cur.description]
-                print("elif")
-                # print(all_non_coupon_available)
+
                 cur.close()
 
             else:
@@ -814,10 +803,6 @@ def trader_coupon():
                         FROM coupon, crops, transaction WHERE transaction.buyer_Id='{user_id}' AND transaction.Transaction_Id = coupon.Transaction_Id and crops.Crop_Id = coupon.Crop_Id and coupon.Valid_Till<='{current_date}';")
                 all_non_coupon_available = cur.fetchall()
                 cur.close()
-
-
-            print(all_coupon_available)
-            print(all_non_coupon_available)
         return render_template('/Trader/coupon.html',all_coupon_available=all_coupon_available,all_non_coupon_available=all_non_coupon_available)
     else:
         print("No username found in session")
@@ -887,7 +872,7 @@ def mandi_new_crop():
                     crop_Id=Crop_Id['Crop_Id']
                     cursor.execute(f"INSERT INTO dbms_project.crop_mandi_board (Mandi_Board_Id, Crop_Id, Msp, Previous_Price) VALUES ('{User_Id}','{crop_Id}','{MSP}','{'0'}')")
                 else:
-                    print(Crop_Id)
+
                     flash("Crop already exists!")
             mysql.connection.commit()
             cursor.close()
@@ -900,7 +885,7 @@ def mandi_new_crop():
 @app.route('/mandi_crop_delete/<string:id_data>', methods=['POST', 'GET'])
 def mandi_crop_delete(id_data):
     if not session.get('Username') is None:
-        print(id_data)
+
         User_Id = session.get('User_Id')
         mysql.connection.cursor().execute(f"Delete From dbms_project.crop_mandi_board WHERE Mandi_Board_Id='{User_Id}' and Crop_Id='{id_data}'")
         mysql.connection.commit()
@@ -989,7 +974,7 @@ def Mandi_delete_storage(id_data):
         cursor.execute(f"SELECT Storage_Id FROM dbms_project.storage_mandi_board_rent WHERE Mandi_Board_Id='{User_Id}' AND Storage_Id='{id_data}' AND timeTo> '{current_date}'")
         booked_space = cursor.fetchone()
 
-        print(id_data)
+
         if booked_space is None:
             mysql.connection.cursor().execute(f"Delete From dbms_project.storage_mandi_board WHERE Mandi_Board_Id='{User_Id}' AND Storage_Id='{id_data}'")
             mysql.connection.commit()
@@ -1012,7 +997,7 @@ def mandi_board_transactions():
         traders.insert(0, {'User_Id': 'All Buyers'})
         UUser_Id = session.get('User_Id')
 
-        print(UUser_Id)
+
         cur.close()
         sseller_Id = None
         bbuyer_Id = None
@@ -1112,7 +1097,7 @@ def trader_dashboard():
         for i in Total_Transactions:
             total_transaction = i['count']
         cur.close()
-        print(tra2gh, tra2gv)
+
         colors = [
             "#7bd05e","#F7464A", "#2eb376", "#46BFBD", "#FDB45C", "#FEDCBA",
             "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
@@ -1161,19 +1146,19 @@ def farmer_dashboard():
         result2 = cur.fetchall()
         cur.execute(
             f"select seller_Id,seller.Name,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction join seller where seller.User_Id=transaction.seller_Id and seller.Designation='F' and seller_Id='{user_id}' group by seller_Id;")
-        TotalIncome = cur.fetchall();
+        TotalIncome = cur.fetchall()
         totalincome = 0
         for i in TotalIncome:
             totalincome = i['Amount']
         cur.execute(
             f"select seller_Id,sum(Quantity_Kg) as Quantity,sum(Amount) as Amount from transaction where seller_Id='{user_id}' and month(transaction.Date_Of_Transaction)=month(curdate()) group by month(transaction.Date_Of_Transaction);")
-        ThisMonthIncome = cur.fetchall();
+        ThisMonthIncome = cur.fetchall()
         monthincome = 0
         for i in ThisMonthIncome:
             monthincome = i['Amount']
         cur.execute(
             f"select  mandi_board.User_Id, seller_Id, amount,Quantity, mandi_board.Trade_Charges from mandi_board join (SELECT seller_Id,sum(Quantity_Kg) as Quantity,SUM(Amount) as amount, Mandi_Board_Id FROM dbms_project.transaction  WHERE seller_Id='{user_id}' group by(seller_Id)) as temp where mandi_board.User_Id=temp.Mandi_Board_Id;")
-        TotalTaxPaid = cur.fetchall();
+        TotalTaxPaid = cur.fetchall()
         TotalTax = 0
         for i in TotalTaxPaid:
             TotalTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
@@ -1185,7 +1170,6 @@ def farmer_dashboard():
             MonthTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
         cur.close()
 
-        print(result2)
         return render_template('/farmer/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
                                max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
                                TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
@@ -1215,11 +1199,11 @@ def analyst_agriculture_analysis():
         cur = mysql.connection.cursor()
         cur.execute(
             f"SELECT Crop_Id, Crop_Name FROM dbms_project.CropMandi group by Crop_Name;")
-        Crops = cur.fetchall();
+        Crops = cur.fetchall()
         crop_name = []
         for i in Crops:
             crop_name.append(i['Crop_Name'])
-        print(crop_name)
+
         return render_template('/Analyst/agriculture_analysis.html', name = crop_name)
     else:
         print("No username found in session")
@@ -1232,31 +1216,31 @@ def analyst_dashboard():
         cur = mysql.connection.cursor()
         cur.execute(
             f"select * from analyst where User_Id='{user_id}';")
-        Name = cur.fetchall();
+        Name = cur.fetchall()
         name = 0
         for i in Name:
             name = i['Analyst_Name']
         cur.execute(
                 f"select count(*) as count from FarmerList;")
-        TF = cur.fetchall();
+        TF = cur.fetchall()
         tf = 0
         for i in TF:
             tf = i['count']
         cur.execute(
             f"select count(*) as count from trader;")
-        TT = cur.fetchall();
+        TT = cur.fetchall()
         tt = 0
         for i in TT:
             tt = i['count']
         cur.execute(
             f"select count(*) as count from FPOList;")
-        TFPO = cur.fetchall();
+        TFPO = cur.fetchall()
         tfpo = 0
         for i in TFPO:
             tfpo = i['count']
         cur.execute(
             f"select count(*) as count from mandi_board;")
-        TMB = cur.fetchall();
+        TMB = cur.fetchall()
         tmb = 0
         for i in TMB:
             tmb = i['count']
@@ -1326,7 +1310,7 @@ def FPO_dashboard():
             MonthTax += round((i['amount'] * i['Trade_Charges']) / 100, 2)
         cur.close()
 
-        print(result2)
+
         return render_template('/FPO/dashboard.html', max=maximum + 1000, labels=far1gh, values=far1gv,
                                max1=maximum1 + 4, labels1=far2gh, values1=far2gv, data=result1, data1=result2,
                                TotalIncome=totalincome, MonthIncome=monthincome, TotalTax=TotalTax, MonthTax=MonthTax)
@@ -1363,13 +1347,13 @@ def mandi_board_dashboard():
         year = ''; month = '';mtax=0;mspace=0
         if request.method == 'POST':
             year_month = request.form['year_month']
-            # print(year_month)
+
 
             for i  in range(0, len(year_month)):
-                if(year_month[i]=='-'):
+                if year_month[i]== '-':
                     year = year_month[:i]
                     month = year_month[i+1:len(year_month)]
-            # print(year,month)
+
 
             cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id and year(transaction.Date_Of_Transaction)='{year}' and month(transaction.Date_Of_Transaction)='{month}' group by Mandi_Board_Id order by Amount desc;")
             month_tax = cursor.fetchall()
@@ -1379,7 +1363,7 @@ def mandi_board_dashboard():
             month_space = cursor.fetchall()
             for i in month_space:
                 mspace = (i['Charges'])
-            # print(mtax,mspace,'post')
+
         else:
             cursor.execute(f"select month(curdate()),Mandi_Board_Id,Name, Trade_Charges, sum(Amount) as Amount,sum(Quantity_Kg) as Quantity from transaction join mandi_board where transaction.Mandi_Board_Id='{user_id}' and transaction.Mandi_Board_Id= mandi_board.User_Id group by Mandi_Board_Id order by Amount desc;")
             month_tax = cursor.fetchall()
@@ -1389,13 +1373,55 @@ def mandi_board_dashboard():
             month_space = cursor.fetchall()
             for i in month_space:
                 mspace = (i['Charges'])
-            # print(mtax,mspace,'get')
+
 
         return render_template('/Mandi_Board/dashboard.html', data=table1,data1=table2, name=Mandiname, state=Mandistate, locality=Mandilocaltity, district=Mandidistrict, mtax=mtax, mspace=mspace)
     else:
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/fpo_storage',methods=['GET','POST'])
+def fpo_storage():
+    if not session.get('Username') is None:  # checking if session exists
+        user_id = session.get('User_Id')
+        cursor = mysql.connection.cursor()
+        fpo_storage_in_mandi=f"SELECT dbms_project.storage_mandi_board_rent.Storage_Id,Name,Email_Address,Charges,timeFrom,timeTo FROM dbms_project.storage_mandi_board_rent\
+                        INNER JOIN dbms_project.mandi_board ON dbms_project.mandi_board.User_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id \
+                        INNER JOIN dbms_project.storage_mandi_board ON dbms_project.storage_mandi_board.Mandi_Board_Id=dbms_project.storage_mandi_board_rent.Mandi_Board_Id AND dbms_project.storage_mandi_board.Storage_Id=dbms_project.storage_mandi_board_rent.Storage_Id \
+                        WHERE Renter_Person_Id='{user_id}' "
+        all_mandi_board = "SELECT User_Id,Name FROM dbms_project.mandi_board"
+        cursor.execute(fpo_storage_in_mandi)
+        fpo_storage_data = cursor.fetchall()
+        cursor.execute(all_mandi_board)
+        all_mandi_board_data = cursor.fetchall()
+        cursor.close()
+
+        all_mandi_board_storage = None
+        if request.method == 'GET':
+            cursor = mysql.connection.cursor()
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where not exists(\
+                                SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                                WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id)"
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+
+        if request.method == 'POST':
+            cursor = mysql.connection.cursor()
+            mandi_boardID_selected = request.form['mandi_board_selection']
+
+            available_storage_space = f"SELECT Storage_Id,Name,Email_Address,State,Charges,Space From storage_mandi_board inner join mandi_board on mandi_board.User_Id = storage_mandi_board.Mandi_Board_Id where storage_mandi_board.Mandi_Board_ID = '{mandi_boardID_selected}' AND not exists(\
+                    SELECT Mandi_Board_ID,Storage_Id FROM storage_mandi_board_rent \
+                    WHERE timeTo>'{current_date}' and storage_mandi_board_rent.Mandi_Board_ID=storage_mandi_board.Mandi_Board_Id AND storage_mandi_board_rent.Storage_Id=storage_mandi_board.Storage_Id )"
+            cursor.execute(available_storage_space)
+            all_mandi_board_storage = cursor.fetchall()
+            cursor.close()
+        return render_template('/FPO/FPO_storage.html', storage_output_data=fpo_storage_data,
+                               mandiID_output_data=all_mandi_board_data,
+                               all_mandi_board_storage_output_data=all_mandi_board_storage)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
 
 @app.route('/farmer_storage', methods=['GET', 'POST'])
 def farmer_storage():
@@ -1422,7 +1448,7 @@ def farmer_storage():
             cursor.execute(available_storage_space)
             all_mandi_board_storage = cursor.fetchall()
             cursor.close()
-            print(all_mandi_board_storage)
+
 
         if request.method == 'POST':
             cursor = mysql.connection.cursor()
@@ -1472,9 +1498,19 @@ def add_storage_space():
             cursor.execute(update_mandi_storage_revenue)
             mysql.connection.commit()
 
+            cursor.execute(f"SELECT Designation FROM dbms_project.seller WHERE User_Id='{User_Id}'")
+            user_profession =cursor.fetchone()
+
             cursor.close()
 
-        return redirect(url_for('farmer_storage'))
+            if user_profession=="F":
+                return redirect(url_for('farmer_storage'))
+            else:
+                return redirect(url_for('fpo_storage'))
+
+        else:
+            print("No username found in session")
+            return redirect(url_for('check_login_info'))
 
 
 @app.route('/mandi_board', methods=['GET', 'POST'])
@@ -1520,8 +1556,7 @@ def mandi_board():
                                                                             INNER JOIN dbms_project.crops ON dbms_project.crop_mandi_board.Crop_Id=dbms_project.crops.Crop_Id\
                                                                             INNER JOIN dbms_project.mandi_board ON dbms_project.crop_mandi_board.Mandi_Board_Id=dbms_project.mandi_board.User_Id WHERE dbms_project.mandi_board.User_Id='{mandi_boardID_selected}' AND dbms_project.crops.Crop_Id='{crop_selected}'")
                 crops_list = cursor.fetchall()
-            print("Mandi " + mandi_boardID_selected)
-            print("Crops " + crop_selected)
+
         return render_template('mandi_board.html', data=mandi_data, crops_list=crops_list,
                                mandiID_output_data=all_mandi_board_data, crop_output_data=all_crop_name,profession=session['profession'])
     else:
@@ -1618,7 +1653,7 @@ def check_login_info():
             cursor.close()
             if account:
                 session['profession'] = user_profession
-                print("Hello Analyst")
+
                 return create_session(account)
             else:
                 return render_template('Login.html')
@@ -1707,7 +1742,7 @@ def Seller_signUp(seller_type):
             new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id, Trade_Charges) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}','{0}')"
             cursor.execute(new_farmer_sql)
 
-        print("USER_ID: " + str(User_Id))
+
         mysql.connection.commit()
         cursor.close()
 
@@ -1784,6 +1819,3 @@ def Analyst_signUp():
 if __name__ == '__main__':
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.run(debug=True)
-
-
-#TODO: Storage.html and crop_price.html datatoggle is not working
