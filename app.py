@@ -20,7 +20,7 @@ current_date = datetime.today().strftime('%Y-%m-%d')
 @app.route('/', methods=['GET', 'POST'])
 def start():
     if request.method == 'GET':
-        return render_template('start.html')
+        return render_template('HomePage.html')
 
 
 @app.route('/base')
@@ -481,6 +481,7 @@ def farmer_transactions():
 
         cur.close()
         bbuyer_Id = None
+
         if request.method == 'GET':
             cur = mysql.connection.cursor()
             cur.execute(
@@ -1569,7 +1570,7 @@ def logout():
     session.pop('User_Id', None)
     session.pop('Username', None)
     session.pop('profession', None)
-    return render_template('start.html')
+    return render_template('HomePage.html')
 
 
 def create_session(account):
