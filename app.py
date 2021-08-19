@@ -84,6 +84,10 @@ def FPO_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/about',methods=['GET', 'POST'])
+def about():
+    return render_template("/about_team.html")
+
 @app.route('/farmer_info',methods=['GET', 'POST'])
 def farmer_info():
     if not session.get('Username') is None:
