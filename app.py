@@ -1193,6 +1193,37 @@ def farmer_my_policies():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
+@app.route('/FPO_all_policies', methods=['GET', 'POST'])
+def FPO_all_policies():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        cur = mysql.connection.cursor()
+        cur.execute(
+            f"select Seller_Id,seller_policy.Policy_Id,Name,Details,Date_Registeration from seller_policy join government_policy where  Seller_Id='{user_id}' and government_policy.Policy_Id=seller_policy.Policy_Id;")
+        result = cur.fetchall()
+
+        return render_template('/FPO/all_policies.html', data = result)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
+@app.route('/FPO_my_members', methods=['GET', 'POST'])
+def FPO_my_members():
+    if not session.get('Username') is None:
+        user_id = session.get('User_Id')
+        cur = mysql.connection.cursor()
+        print(user_id);
+        cur.execute(
+            f"select User_Id, Name, State from FarmerList join (select FPO_Id as fpo from FPOList where User_Id='{user_id}') as shanu where shanu.fpo=FPO_Id;")
+        result = cur.fetchall()
+
+        return render_template('/FPO/my_members.html', data = result)
+    else:
+        print("No username found in session")
+        return redirect(url_for('check_login_info'))
+
+
 @app.route('/analyst_agriculture_analysis', methods=['GET', 'POST'])
 def analyst_agriculture_analysis():
     if not session.get('Username') is None:

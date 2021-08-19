@@ -7,128 +7,35 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container" style="margin-left: 270px">
-    <div class="well text-center" style="margin-top:50px">
-        <h2 style="color: #094f0e;">Crops</h2>
-    </div>
-    <div class="container" style="margin-left:40px;">
-        <div class="col-md-12">
-            <h4 style="color: #094f0e;">Crop List <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add Crop </button> </h4>
-            {%with messages = get_flashed_messages()%}
-
-                {%if messages%}
-
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-dismissable" role="alert">
-
-                            <button type="button" class="close" data-dismiss="alert" aria-label ="close">
-
-                                <span aria-hidden="true">&times;</span>
-
-                            </button>
-                            {{message}}
-                        </div>
-                    {% endfor %}
-                {%endif%}
-            {%endwith%}
-            <table class="table table-striped" style="margin-top:30px">
-                <tr>
-                    <!--<th>Seller ID</th>-->
-                    <th class="table-boot1">Crop Name</th>
-                    <th class="table-boot1">Quality</th>
-                    <th class="table-boot1">Price</th>
-                    <th class="table-boot1">Quantity</th>
-                    <th class="table-boot1">Action</th>
-                </tr>
-                {% for row in data %}
-                    <tr>
-                        <!--<td>{{row.Seller_Id}}</td>-->
-                        <td class="table-boot">{{row.Crop_Name}}</td>
-                        <td class="table-boot">{{row.Quality_10}}</td>
-                        <td class="table-boot">{{row.Price_1kg}}</td>
-                        <td class="table-boot">{{row.Quantity_Kg}}</td>
-                        <td >
-                            <a href="#" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.Crop_Id}}" style="margin-right:20px">Edit</a>
-                            <a href="/fpo_delete/{{row.Crop_Id}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm Delete')">Delete</a>
-                        </td>
-                    </tr>
-                    <div id="modaledit{{row.Crop_Id}}" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Update Crop Details</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ url_for('update_crop_fpo') }}" method="POST">
-                                        <div class="form-group">
-                                            <label>Crop ID:</label>
-                                            <!--<input type="hidden" name="id" value="100">-->
-                                            <input type="text" class="form-control" name="crop_id" value="{{row.Crop_Id}}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Quality:</label>
-                                            <input type="text" class="form-control" name="quality" value="{{row.Quality_10}}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Price:</label>
-                                            <input type="text" class="form-control" name="price" value="{{row.Price_1kg}}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Quantity:</label>
-                                            <input type="text" class="form-control" name="quantity" value="{{row.Quantity_Kg}}">
-                                        </div>
-                                        <div class="form-group">
-                                            <button class="btn btn-primary" type="submit">Update Data</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor  %}
-
-            </table>
-
-            <div id="mymodal" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Please Insert Data</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form action="{{url_for('fpo_insert')}}" method="POST">
-                                <div class="form-group">
-                                    <label>Crop Name:</label>
-                                    <input type="text" class="form-control" name="crop_name" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <label>Mandi Name: </label>
-                                    <input type="text" class="form-control" name="mandi_name" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <label>Quality:</label>
-                                    <input type="text" class="form-control" name="quality" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <label>Price:</label>
-                                    <input type="text" class="form-control" name="price" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <label>Quantity:</label>
-                                    <input type="text" class="form-control" name="quantity" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-primary" type="submit">Insert Data</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <div style="height: 650px; margin-top: 40px; ">
+        <div class="page-wrapper" style="width: 1300px; margin-left: 320px; display: inline-block; margin-top: 50px;">
+            <div class="content">
+                <div class="row">
+                    <h4 class="page-title" style="color: #4f835b">My Policies</h4>
+                </div>
+                <div class="row" style="height: 500px; overflow-y: auto">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped custom-table">
+                                <thead>
+                                <tr>
+                                    <th class="table-boot1">Policy Id</th>
+                                    <th class="table-boot1">Name</th>
+                                    <th class="table-boot1">Detail</th>
+                                    <th class="table-boot1">Date Of Registration</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in data %}
+                                    <tr>
+                                        <td class="table-boot">{{ row['Policy_Id'] }}</td>
+                                        <td class="table-boot">{{ row['Name'] }}</td>
+                                        <td class="table-boot">{{ row['Details'] }}</td>
+                                        <td class="table-boot">{{ row['Date_Registeration'] }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
