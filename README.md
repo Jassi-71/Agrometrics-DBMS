@@ -47,7 +47,7 @@ Link for the website - https://agrometric.herokuapp.com/
   
 ## Feedback
 
-If you have any feedback for this application please feel free to reach out and connect us at  - agrometrics@gmail.com
+If you have any feedback for this application please feel free to reach out and connect us at  - agrometricsiiitd@gmail.com
 
   
 ## Optimizations
