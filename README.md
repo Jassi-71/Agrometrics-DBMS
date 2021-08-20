@@ -77,6 +77,8 @@ Website is hosted at Heroku (Feel free to check it out).
 ![3](https://user-images.githubusercontent.com/63155782/130185657-606662eb-ac38-4398-bcdf-a07d39767739.jpg)
 ![4](https://user-images.githubusercontent.com/63155782/130185668-04aea6e6-f970-4605-819d-a5effdf894e9.jpg)
 ![5](https://user-images.githubusercontent.com/63155782/130185673-5037f06e-8dc5-4663-bc6f-a6fddbdfe622.jpg)
+![6](https://user-images.githubusercontent.com/63155782/130186049-3c8370d7-021b-41d3-9434-2c7cc4909ad6.jpg)
+![7](https://user-images.githubusercontent.com/63155782/130186055-91313698-8bca-4984-a0e0-1033494dfcf3.jpg)
 
   
 ## Authors
