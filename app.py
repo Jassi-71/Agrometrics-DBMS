@@ -1724,7 +1724,7 @@ def Trader_signUp():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('check_login_info'))
-    return render_template("/Trader/trader_registration.html")
+    return render_template("/Trader/Trader_registration.html")
 
 
 @app.route('/Seller_signUp/<string:seller_type>', methods=['GET', 'POST'])
