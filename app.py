@@ -1753,7 +1753,7 @@ def Seller_signUp(seller_type):
         Designation = 'F'
         if seller_type == 'FPO':
             Designation = 'FP'
-        sql_formula = f"INSERT INTO dbms_project.seller(User_Id,Login,Password,Name,Locality,District,State,Pincode,Bank_Account_No,Income,Designation,Email) VALUES('{User_Id}','{Username}','{password}','{Name}','{Locality}','{District}','{State}','{Zip}','{BankAccount}','{Income}','{Designation}','{Email}') "
+        sql_formula = f"INSERT INTO dbms_project.seller(User_Id,Login,Password,Name,Locality,District,State,Pincode,Bank_Account_No,Income,Designation,Email,Trade_Charges) VALUES('{User_Id}','{Username}','{password}','{Name}','{Locality}','{District}','{State}','{Zip}','{BankAccount}','{Income}','{Designation}','{Email}','{0}') "
 
         cursor.execute(sql_formula)
         mysql.connection.commit()
@@ -1779,7 +1779,7 @@ def Seller_signUp(seller_type):
                 if int(ID[1:]) > farmer_ID:
                     farmer_ID = int(ID[1:])
             farmer_ID = 'f' + str(farmer_ID + 1)
-            new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id, Trade_Charges) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}','{0}')"
+            new_farmer_sql = f"INSERT into dbms_project.farmers(Farmer_Id, User_Id_Linked, Land_Area, Fpo_Id) VALUES('{farmer_ID}','{User_Id}','{0}','{'fp1'}')"
             cursor.execute(new_farmer_sql)
 
 
