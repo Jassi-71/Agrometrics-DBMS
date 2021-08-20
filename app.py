@@ -1111,7 +1111,7 @@ def trader_dashboard():
             "#7bd05e","#F7464A", "#2eb376", "#46BFBD", "#FDB45C", "#FEDCBA",
             "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
             "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
-        return render_template('/Trader/dashboard.html', max=maximum + 1000,
+        return render_template('/Trader/Dashboard.html', max=maximum + 1000,
                                labels=tra1gh, values=tra1gv, max1=maximum1 + 4,
                                set=zip(tra2gv, tra2gh, colors), Total_Spending=total_spending, Total_Trade_Charges=round(total_tax,2), Total_Transactions=total_transaction)
     else:
