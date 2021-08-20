@@ -27,7 +27,7 @@ def start():
 def base():
     return render_template('farmer/base.html')
 
-@app.route('/analyst_info',methods=['GET', 'POST'])
+@app.route('/analyst_info', methods=['GET', 'POST'])
 def analyst_info():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -41,7 +41,7 @@ def analyst_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/trader_info',methods=['GET', 'POST'])
+@app.route('/trader_info', methods=['GET', 'POST'])
 def trader_info():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -55,7 +55,7 @@ def trader_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_board_info',methods=['GET', 'POST'])
+@app.route('/mandi_board_info', methods=['GET', 'POST'])
 def mandi_board_info():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -69,7 +69,7 @@ def mandi_board_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/FPO_info',methods=['GET', 'POST'])
+@app.route('/FPO_info', methods=['GET', 'POST'])
 def FPO_info():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -84,15 +84,15 @@ def FPO_info():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/about',methods=['GET', 'POST'])
+@app.route('/about', methods=['GET', 'POST'])
 def about():
     return render_template("/About_application.html")
 
-@app.route('/about_team',methods=['GET', 'POST'])
+@app.route('/about_team', methods=['GET', 'POST'])
 def about_team():
     return render_template("/about_team.html")
 
-@app.route('/farmer_info',methods=['GET', 'POST'])
+@app.route('/farmer_info', methods=['GET', 'POST'])
 def farmer_info():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -210,7 +210,7 @@ def farmer_policy_insert():
         mysql.connection.commit()
         return redirect(url_for('farmer_dashboard'))
 
-@app.route('/update_crop_farmer',methods=['POST','GET'])
+@app.route('/update_crop_farmer', methods=['POST', 'GET'])
 def update_crop_farmer():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
@@ -226,7 +226,7 @@ def update_crop_farmer():
         cursor.close()
         return redirect(url_for('farmer_crops'))
 
-@app.route('/update_crop_fpo',methods=['POST','GET'])
+@app.route('/update_crop_fpo', methods=['POST', 'GET'])
 def update_crop_fpo():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
@@ -242,7 +242,7 @@ def update_crop_fpo():
         cursor.close()
         return redirect(url_for('FPO_my_crops'))
 
-@app.route('/Edit_analyst_info',methods=['POST', 'GET'])
+@app.route('/Edit_analyst_info', methods=['POST', 'GET'])
 def Edit_analyst_info():
     cursor = mysql.connection.cursor()
     user_id = session.get('User_Id')
@@ -257,7 +257,7 @@ def Edit_analyst_info():
     return redirect(url_for('analyst_info'))
 
 
-@app.route('/Edit_trader_info',methods=['POST', 'GET'])
+@app.route('/Edit_trader_info', methods=['POST', 'GET'])
 def Edit_trader_info():
     cursor = mysql.connection.cursor()
     user_id = session.get('User_Id')
@@ -272,7 +272,7 @@ def Edit_trader_info():
     cursor.close()
     return redirect(url_for('trader_info'))
 
-@app.route('/Edit_mandi_info',methods=['POST', 'GET'])
+@app.route('/Edit_mandi_info', methods=['POST', 'GET'])
 def Edit_mandi_info():
     cursor = mysql.connection.cursor()
     user_id = session.get('User_Id')
@@ -292,7 +292,7 @@ def Edit_mandi_info():
     return redirect(url_for('mandi_board_info'))
 
 
-@app.route('/Edit_farmer_info',methods=['POST', 'GET'])
+@app.route('/Edit_farmer_info', methods=['POST', 'GET'])
 def Edit_farmer_info():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
@@ -314,7 +314,7 @@ def Edit_farmer_info():
         cursor.close()
         return redirect(url_for('farmer_info'))
 
-@app.route('/Edit_FPO_info',methods=['POST', 'GET'])
+@app.route('/Edit_FPO_info', methods=['POST', 'GET'])
 def Edit_FPO_info():
     if request.method == 'POST':
         cursor = mysql.connection.cursor()
@@ -365,7 +365,7 @@ def FPO_coupon_delete(id_data):
     mysql.connection.commit()
     return redirect(url_for('FPO_coupon'))
 
-@app.route('/farmer_coupon', methods=['GET','POST'])
+@app.route('/farmer_coupon', methods=['GET', 'POST'])
 def farmer_coupon():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
@@ -421,7 +421,7 @@ def farmer_coupon():
         return redirect(url_for('check_login_info'))
 
 
-@app.route('/FPO_coupon', methods=['GET','POST'])
+@app.route('/FPO_coupon', methods=['GET', 'POST'])
 def FPO_coupon():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
@@ -568,7 +568,7 @@ def FPO_transactions():
         return redirect(url_for('check_login_info'))
 
 
-@app.route('/trader_buy_crop',methods=['GET','POST'])
+@app.route('/trader_buy_crop', methods=['GET', 'POST'])
 def trader_buy_crop():
     if not session.get('Username') is None:
         if request.method == 'POST':
@@ -765,7 +765,7 @@ def trader_crop_price():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/trader_coupon', methods=['GET','POST'])
+@app.route('/trader_coupon', methods=['GET', 'POST'])
 def trader_coupon():
     if not session.get('Username') is None:
         user_id = session.get('User_Id')
@@ -817,7 +817,7 @@ def trader_coupon():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_board_crops', methods=['GET','POST'])
+@app.route('/mandi_board_crops', methods=['GET', 'POST'])
 def mandi_board_crops():
     cursor=mysql.connection.cursor()
     if not session.get('Username') is None:
@@ -833,7 +833,7 @@ def mandi_board_crops():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/edit_mandi_MSP',methods=['GET','POST'])
+@app.route('/edit_mandi_MSP', methods=['GET', 'POST'])
 def edit_mandi_MSP():
     if not session.get('Username') is None:
         if request.method == 'POST':
@@ -852,7 +852,7 @@ def edit_mandi_MSP():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_new_crop',methods=['GET','POST'])
+@app.route('/mandi_new_crop', methods=['GET', 'POST'])
 def mandi_new_crop():
     if not session.get('Username') is None:
         if request.method == 'POST':
@@ -903,7 +903,7 @@ def mandi_crop_delete(id_data):
             print("No username found in session")
             return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_board_storage_space',methods=['POST','GET'])
+@app.route('/mandi_board_storage_space', methods=['POST', 'GET'])
 def mandi_board_storage_space():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -928,7 +928,7 @@ def mandi_board_storage_space():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_add_storage_space', methods=['GET','POST'])
+@app.route('/mandi_add_storage_space', methods=['GET', 'POST'])
 def mandi_add_storage_space():
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -952,7 +952,7 @@ def mandi_add_storage_space():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/mandi_add_storage_edit',methods=['GET','POST'])
+@app.route('/mandi_add_storage_edit', methods=['GET', 'POST'])
 def mandi_add_storage_edit():
     if not session.get('Username') is None:
         if request.method == 'POST':
@@ -975,7 +975,7 @@ def mandi_add_storage_edit():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/Mandi_delete_storage/<string:id_data>', methods=['GET','POST'])
+@app.route('/Mandi_delete_storage/<string:id_data>', methods=['GET', 'POST'])
 def Mandi_delete_storage(id_data):
     if not session.get('Username') is None:
         cursor = mysql.connection.cursor()
@@ -1420,7 +1420,7 @@ def mandi_board_dashboard():
         print("No username found in session")
         return redirect(url_for('check_login_info'))
 
-@app.route('/fpo_storage',methods=['GET','POST'])
+@app.route('/fpo_storage', methods=['GET', 'POST'])
 def fpo_storage():
     if not session.get('Username') is None:  # checking if session exists
         user_id = session.get('User_Id')
