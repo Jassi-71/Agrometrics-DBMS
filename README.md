@@ -72,7 +72,11 @@ Website is hosted at Heroku (Feel free to check it out).
   
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![1](https://user-images.githubusercontent.com/63155782/130185649-4d237902-9dff-4360-a47f-7f928921479d.jpg)
+![2](https://user-images.githubusercontent.com/63155782/130185653-df490e12-4c94-435e-a0da-db6290fe7de2.jpg)
+![3](https://user-images.githubusercontent.com/63155782/130185657-606662eb-ac38-4398-bcdf-a07d39767739.jpg)
+![4](https://user-images.githubusercontent.com/63155782/130185668-04aea6e6-f970-4605-819d-a5effdf894e9.jpg)
+![5](https://user-images.githubusercontent.com/63155782/130185673-5037f06e-8dc5-4663-bc6f-a6fddbdfe622.jpg)
 
   
 ## Authors
