@@ -1,5 +1,4 @@
-# Agrometrics
-<<<<<<< master
+
 
 # AGROMETRICS - 
 Application that aids farmers.
