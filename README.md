@@ -32,8 +32,6 @@ e) FPO (Farmers Producers Organisation) - Group formed by collection of farmers 
 f) Analysts - They analyse the data for the application and suggest the changes that could be made to attract more farmers, traders to the application.
 
 
-
-
 ## Demo
 
 Please check out out fully functional website which has been deplyed by the team
