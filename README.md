@@ -12,9 +12,9 @@ Our platform will provide them with relevant data and assistance to ensure trans
 
 **Following are some additional information that makes your functioning smooth in this web based application.**
 
-1) As the webpages are dynamic, we request to to view our webpages at **(90% zoom)**.This would help us give you the required user experience.
+1) As the webpages are not dynamic, we request to to view our webpages at **(90% zoom)**.This would help us give you the required user experience.
 
-2) Please view this on a computer or a laptop. It non-dynamic part may not be compatible with mobile screens.
+2) Please view this on a computer or a laptop. The non-dynamic part may not be compatible with mobile screens.
 
 
 **Following are 6 StakeHolders of the Application :-**
