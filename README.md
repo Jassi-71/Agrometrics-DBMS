@@ -1,20 +1,11 @@
 # AGROMETRICS - 
-Application that gives wings to farmers.
+Application that aids farmers.
 
 In a world where the farmer’s hard work is of such importance, there we find that they are unable to sell crops at reasonable prices or get information that would help them make smart choices. 
 
 Traders also find it difficult as they also do not have many choices and cannot buy the best quality crops at reasonable prices. Moreover, the Government and Mandi House do not have data of crops bought or sold and the problems faced by farmers and traders. 
 
 Our platform will provide them with relevant data and assistance to ensure transparency in trade.
-
-
-## Appendix
-
-**Following are some additional information that makes your functioning smooth in this web based application.**
-
-1) As the webpages are dynamic, we request to to view our webpages at **(90% zoom)**.This would help us give you the required user experience.
-
-2) Please view this on a computer or a laptop. It non-dynamic part may not be compatible with mobile screens.
 
 
 **Following are 6 StakeHolders of the Application :-**
@@ -40,20 +31,8 @@ Please check out out fully functional website which has been deplyed by the team
 
 Link for the website - https://agrometric.herokuapp.com/
 
-(Recommended to keep **90% zoom** for better user experience)
 
 
-
-## Feedback
-
-If you have any feedback for this application please feel free to reach out and connect us at  - agrometricsiiitd@gmail.com
-
-
-## Optimizations
-
-What optimizations did you make in your code? 
-
-Optimisations were made to minimise number of tables, code reusability by inheriting from parent html file, optimising sql queries and many other.
 
 
 ## Tech Stack
