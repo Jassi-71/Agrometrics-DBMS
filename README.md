@@ -65,7 +65,6 @@ Database for this application is hosted at AWS(RDS) server.
 Website is hosted at Heroku (Feel free to check it out).
 
 
-
 ## Screenshots
 
 ![1](https://user-images.githubusercontent.com/63155782/130185649-4d237902-9dff-4360-a47f-7f928921479d.jpg)
